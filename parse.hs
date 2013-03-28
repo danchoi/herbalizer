@@ -153,8 +153,9 @@ genericExpression = do
 type Nesting = Int
 
 erb ::  Nesting -> Tree -> [String]
-erb n tree@(Tree (Tag t a i) xs) = 
-    (pad n ++ startTag tree) : (processChildren n xs ++ [pad n ++ endTag tree])
+
+erb n tree@(Tree (Tag t a i) []) = [pad n ++ startTag tree ++ endTag tree]
+erb n tree@(Tree (Tag t a i) xs) = (pad n ++ startTag tree) : (processChildren n xs ++ [pad n ++ endTag tree])
 
 erb n tree@(Tree (RubyStartBlock s) xs) = 
     (pad n ++ "<% " ++ s ++ " %>") : processChildren n xs
