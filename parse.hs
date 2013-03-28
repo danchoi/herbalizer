@@ -85,13 +85,15 @@ rubyString1 = do
   char '\'' 
   xs <-  many (noneOf "'")
   char '\''
-  return $  "\'" ++ xs ++ "\'"
+  -- we don't need to include the quotes
+  return xs 
 
 rubyString2 = do
   char '"'
   xs <- many (noneOf "\"")
   char '"'
-  return $  "\"" ++ xs ++ "\""
+  -- TODO interpolation markers should change from #{ } to <% %>
+  return $  "FIX: " ++ xs 
 
 rubyString = rubyString1 <|> rubyString2
 
