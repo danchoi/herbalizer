@@ -177,7 +177,7 @@ endTag (Tree (Tag t _ _) _) = "</" ++ t ++ ">"
 
 showAttrs xs = case map makeAttr xs of 
       [] -> ""
-      xs' -> intercalate " " xs'
+      xs' -> " " ++ intercalate " " xs'
     where makeAttr (k,v) =  intercalate "=" [k, "\"" ++ v ++ "\"" ]
 
 inline x = x
