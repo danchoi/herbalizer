@@ -156,16 +156,17 @@ erb n tree@(Tree (PlainText s) _) = [pad n ++ s]
 
 erb n x@_ = [pad n ++ show x]
 
-processChildren n xs = concat $ map (erb (n + 1)) $ insertEndTags xs
+processChildren n xs = concat $ map (erb (n + 1)) $ endtags xs
 
-insertEndTags (x@(Tree (RubyStartBlock _) _):y@(Tree (RubyMidBlock _) _):xs) = 
-    x:(insertEndTags (y:xs))  -- just shift the cursor to the right
-insertEndTags (x@(Tree (RubyMidBlock _) _):y@(Tree (RubyMidBlock _) _):xs) = 
-    x:(insertEndTags (y:xs))
-insertEndTags (x@(Tree (RubyStartBlock _) _):xs) = x:(Tree (PlainText "<% end %>") []):(insertEndTags xs)
-insertEndTags (x@(Tree (RubyMidBlock _) _):xs) = x:(Tree (PlainText "<% end %>") []):(insertEndTags xs)
-insertEndTags (x:xs) = x : (insertEndTags xs)
-insertEndTags [] = []
+-- This function tries to insert "<% end %>" tags correctly
+endtags (x@(Tree (RubyStartBlock _) _):y@(Tree (RubyMidBlock _) _):xs) = 
+    x:(endtags (y:xs))  -- just shift the cursor to the right
+endtags (x@(Tree (RubyMidBlock _) _):y@(Tree (RubyMidBlock _) _):xs) = 
+    x:(endtags (y:xs))
+endtags (x@(Tree (RubyStartBlock _) _):xs) = x:(Tree (PlainText "<% end %>") []):(endtags xs)
+endtags (x@(Tree (RubyMidBlock _) _):xs) = x:(Tree (PlainText "<% end %>") []):(endtags xs)
+endtags (x:xs) = x : (endtags xs)
+endtags [] = []
 
 
 startTag :: Tree -> String
