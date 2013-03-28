@@ -21,7 +21,8 @@ type InlineContent = String
 
 data Expression = Comment String 
     | PlainText String
-    | RubyBlock String
+    | RubyStartBlock String
+    | RubyMidBlock String
     | RubyExp String
     | Tag String Attrs InlineContent
     | GenericExpression String 
@@ -36,7 +37,16 @@ container = do
 expression :: IParser Expression
 expression = comment <|> startPlainText <|> rubyBlock <|> rubyExp <|> tag <|> genericExpression
   
-rubyBlock = RubyBlock <$> ((:) <$> char '-' >> spaces >> manyTill anyChar newline <* spaces)
+rubyBlock = do
+    char '-'
+    spaces
+    k <- rubyKeyword
+    rest <- manyTill anyChar newline <* spaces
+    if (k `elem` midBlockKeywords)
+    then return (RubyMidBlock $ k ++ rest)
+    else return (RubyStartBlock $ k ++ rest) 
+  where midBlockKeywords = ["else", "elsif", "rescue", "ensure", "when", "end"]
+
 rubyExp = RubyExp <$> ((:) <$> char '=' >> spaces >> manyTill anyChar newline <* spaces)
 
 tag :: IParser Expression
@@ -68,6 +78,8 @@ hashAttrs = do
   return xs
 
 rubyVar = many (alphaNum <|> char '_')
+
+rubyKeyword = many alphaNum
 
 rubyString1 = do
   char '\'' 
@@ -132,13 +144,29 @@ type Nesting = Int
 
 erb ::  Nesting -> Tree -> [String]
 erb n tree@(Tree (Tag t a i) xs) = 
-    (pad n ++ startTag tree) : (concat (map (erb (n + 1)) xs) ++ [pad n ++ endTag tree])
-erb n tree@(Tree (RubyBlock s) xs) = 
-    (pad n ++ "<% " ++ s ++ " %>") : (concat (map (erb (n + 1)) xs) ++ [pad n ++ "<% end %>"])
+    (pad n ++ startTag tree) : (processChildren n xs ++ [pad n ++ endTag tree])
+
+erb n tree@(Tree (RubyStartBlock s) xs) = 
+    (pad n ++ "<% " ++ s ++ " %>") : processChildren n xs
+erb n tree@(Tree (RubyMidBlock s) xs) = 
+    (pad n ++ "<% " ++ s ++ " %>") : processChildren n xs
+
 erb n tree@(Tree (RubyExp s) _) = [pad n ++ "<%= " ++ s ++ " %>"] 
 erb n tree@(Tree (PlainText s) _) = [pad n ++ s] 
 
 erb n x@_ = [pad n ++ show x]
+
+processChildren n xs = concat $ map (erb (n + 1)) $ insertEndTags xs
+
+insertEndTags (x@(Tree (RubyStartBlock _) _):y@(Tree (RubyMidBlock _) _):xs) = 
+    x:(insertEndTags (y:xs))  -- just shift the cursor to the right
+insertEndTags (x@(Tree (RubyMidBlock _) _):y@(Tree (RubyMidBlock _) _):xs) = 
+    x:(insertEndTags (y:xs))
+insertEndTags (x@(Tree (RubyStartBlock _) _):xs) = x:(Tree (PlainText "<% end %>") []):(insertEndTags xs)
+insertEndTags (x@(Tree (RubyMidBlock _) _):xs) = x:(Tree (PlainText "<% end %>") []):(insertEndTags xs)
+insertEndTags (x:xs) = x : (insertEndTags xs)
+insertEndTags [] = []
+
 
 startTag :: Tree -> String
 startTag (Tree (Tag t a i) _) = "<" ++ t ++ showAttrs a ++ ">" ++ show i
