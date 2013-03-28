@@ -170,12 +170,14 @@ endtags [] = []
 
 
 startTag :: Tree -> String
-startTag (Tree (Tag t a i) _) = "<" ++ t ++ " " ++ showAttrs a ++ ">" ++ inline i
+startTag (Tree (Tag t a i) _) = "<" ++ t ++ showAttrs a ++ ">" ++ inline i
 
 endTag :: Tree -> String
 endTag (Tree (Tag t _ _) _) = "</" ++ t ++ ">"
 
-showAttrs xs = intercalate " " $ map makeAttr xs
+showAttrs xs = case map makeAttr xs of 
+      [] -> ""
+      xs' -> intercalate " " xs'
     where makeAttr (k,v) =  intercalate "=" [k, "\"" ++ v ++ "\"" ]
 
 inline x = x
