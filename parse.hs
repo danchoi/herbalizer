@@ -108,6 +108,9 @@ rubyString = rubyString1 <|> rubyString2
 rubySymbol =  char ':' >> rubyVar
 
 rubyInlineCode = do
+  -- WRONG; fix; eats through commas
+  -- FIX but shouldn't eat through all commas
+  -- check for ( ) of method calls, exprs
   xs <- many (noneOf "}")
   return $ "<%= " ++ xs ++ " %>"
 
