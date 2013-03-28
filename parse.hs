@@ -6,6 +6,7 @@ import Control.Applicative ((<*))
 import Data.List (intercalate)
 import Text.Parsec hiding (State)
 import Text.Parsec.Indent
+import Data.List (isPrefixOf)
 import qualified Data.Map as M
 
 type IParser a = ParsecT String () (State SourcePos) a
@@ -17,7 +18,11 @@ data Tree = Tree Expression [Tree]
     deriving (Show)
 
 type Attrs = [(String, String)]
-type InlineContent = String
+data InlineContent = RubyInlineContent String 
+    | PlainInlineContent String
+    | NullInlineContent
+    deriving (Show, Eq)
+
 
 data Expression = Comment String 
     | PlainText String
@@ -54,15 +59,18 @@ tag = do
     tag <- explicitTag <|> return "div"
     cs <- many dotClass
     hs <- option [] (hashAttrs)
-    s <- manyTill anyChar newline
+    c <- parseInlineContent 
     spaces
-    return $ Tag tag (attrs cs hs) s
+    return $ Tag tag (attrs cs hs) c
   where 
     attrs cs hs = filter (\(k, v) -> v /= "") $ 
       M.toList $ 
       M.unionWith (\a b -> a ++ " " ++ b) 
         (M.fromList (makeClassAttrs cs)) 
         (M.fromList hs)
+    parseInlineContent = (RubyInlineContent <$> (char '=' >> spaces >> manyTill anyChar newline)) <|> 
+        (PlainInlineContent <$> (manyTill anyChar newline)) 
+        <|> return NullInlineContent
 
 explicitTag = do
   char '%'
@@ -161,19 +169,25 @@ erb n x@_ = [pad n ++ show x]
 
 processChildren n xs = concat $ map (erb (n + 1)) $ endtags xs
 
--- This function tries to insert "<% end %>" tags correctly
+-- Try to insert "<% end %>" tags correctly
 endtags (x@(Tree (RubyStartBlock _) _):y@(Tree (RubyMidBlock _) _):xs) = 
     x:(endtags (y:xs))  -- just shift the cursor to the right
 endtags (x@(Tree (RubyMidBlock _) _):y@(Tree (RubyMidBlock _) _):xs) = 
     x:(endtags (y:xs))
 endtags (x@(Tree (RubyStartBlock _) _):xs) = x:(Tree (PlainText "<% end %>") []):(endtags xs)
 endtags (x@(Tree (RubyMidBlock _) _):xs) = x:(Tree (PlainText "<% end %>") []):(endtags xs)
+
+-- Move inline Ruby expressions to child tree
+endtags (x@(Tree (Tag t a (RubyInlineContent s)) ts):xs) = 
+  (Tree (Tag t a NullInlineContent) ((Tree (RubyExp s) []):ts)):(endtags xs)
+
 endtags (x:xs) = x : (endtags xs)
 endtags [] = []
 
 
+
 startTag :: Tree -> String
-startTag (Tree (Tag t a i) _) = "<" ++ t ++ showAttrs a ++ ">" ++ inline i
+startTag (Tree (Tag t a i) _) = "<" ++ t ++ showAttrs a ++ ">" ++ showInlineContent i
 
 endTag :: Tree -> String
 endTag (Tree (Tag t _ _) _) = "</" ++ t ++ ">"
@@ -183,7 +197,9 @@ showAttrs xs = case map makeAttr xs of
       xs' -> " " ++ intercalate " " xs'
     where makeAttr (k,v) =  intercalate "=" [k, "\"" ++ v ++ "\"" ]
 
-inline x = x
+showInlineContent (PlainInlineContent s) = s
+showInlineContent (RubyInlineContent s) = "RUBY: " ++ s
+showInlineContent (NullInlineContent) = ""
     
 pad :: Int -> String
 pad n = take (n * 2) $ repeat ' ' 
