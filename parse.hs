@@ -1,5 +1,5 @@
 module Main where
-import Control.Applicative ((<$>), (<*>))
+import Control.Applicative ((<$>), (<*>), (<*), (<$))
 import Control.Monad (liftM)
 import Control.Monad.State 
 import Control.Applicative ((<*))
@@ -89,21 +89,23 @@ rubyVar = many (alphaNum <|> char '_')
 
 rubyKeyword = many alphaNum
 
-rubyString1 = do
-  char '\'' 
-  xs <-  many (noneOf "'")
-  char '\''
-  -- we don't need to include the quotes
-  return xs 
+rubyStringSingleQuoted = do
+    between (char '\'') (char '\'') (many stringChar)
+  where stringChar = ('\'' <$ string "\\'") <|> (noneOf "'")
 
-rubyString2 = do
-  char '"'
-  xs <- many (noneOf "\"")
-  char '"'
-  -- TODO interpolation markers should change from #{ } to <% %>
-  return $  "FIX: " ++ xs 
+--- FIX
+rubyStringDoubleQuoted = do
+    char '"' 
+    -- FIX
+    xs <- (interpolation <|> nonInterpolation)
+    char '"' 
+    return xs
+  where 
+    interpolation = between (string "#{") (char '}') (many (noneOf "}"))
+    nonInterpolation = many stringChar 
+    stringChar = ('"' <$ string "\\\"") <|> (noneOf "\"")
 
-rubyString = rubyString1 <|> rubyString2
+rubyString = rubyStringSingleQuoted <|> rubyStringDoubleQuoted
 
 rubySymbol =  char ':' >> rubyVar
 
