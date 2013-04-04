@@ -186,7 +186,7 @@ erb n tree@(Tree (RubyMidBlock s) xs) =
 
 erb n tree@(Tree (RubyExp s) _) = [pad n ++ "<%= " ++ s ++ " %>"] 
 erb n tree@(Tree (PlainText s) _) = [pad n ++ s] 
-erb n tree@(Tree (Comment s) _) = [pad n ++ "<!-- " ++ s ++ " -->"] 
+erb n tree@(Tree (Comment s) _) = [pad n ++ "<%#" ++ s ++ " %>"] 
 
 erb n x@_ = [pad n ++ show x]
 
