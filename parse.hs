@@ -8,6 +8,7 @@ import Text.Parsec hiding (State)
 import Text.Parsec.Indent
 import Data.List (isPrefixOf)
 import qualified Data.Map as M
+import Data.List.Utils
 
 type IParser a = ParsecT String () (State SourcePos) a
 
@@ -108,12 +109,13 @@ doubleQuotedStr = do
     between (char '"') (char '"') (many stringChar)
   where stringChar = ('"' <$ string "\\\"") <|> (noneOf "\"")
 
---- can contain Ruby interpolation
+--- Ruby interpolation delimiters crudley replaced by ERB style
 rubyString = do
     between (char '"') (char '"') rString
   where 
-    rString = many stringChar
-    stringChar = ('"' <$ string "\\\"") <|> (noneOf "\"")
+    rString = liftM replaceInterpolationDelim $ many stringChar
+    stringChar = ('"' <$ string "\\\"") <|> (noneOf "\"") 
+    replaceInterpolationDelim = (replace "#{" "<%= ") . (replace "}" " %>")
 
 rubySymbol =  char ':' >> rubyVar
 rubySymbolKey = rubyVar <* char ':'
