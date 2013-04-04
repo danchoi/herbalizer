@@ -173,6 +173,11 @@ type Nesting = Int
 
 erb ::  Nesting -> Tree -> [String]
 
+erb n tree@(Tree (Tag t a i) []) 
+    | t `elem` selfClosingTags = [pad n ++ selfClosingTag tree]
+    -- basically ignores inline content
+  where selfClosingTags = ["br", "img"]
+
 erb n tree@(Tree (Tag t a i) []) = [pad n ++ startTag tree ++ endTag tree]
 erb n tree@(Tree (Tag t a i) xs) = (pad n ++ startTag tree) : (processChildren n xs ++ [pad n ++ endTag tree])
 
@@ -214,6 +219,9 @@ startTag (Tree (Tag t a i) _) = "<" ++ t ++ showAttrs a ++ ">" ++ showInlineCont
 
 endTag :: Tree -> String
 endTag (Tree (Tag t _ _) _) = "</" ++ t ++ ">"
+
+selfClosingTag :: Tree -> String
+selfClosingTag (Tree (Tag t _ _) _) = "<" ++ t ++ "/>"
 
 showAttrs xs = case map makeAttr xs of 
       [] -> ""
