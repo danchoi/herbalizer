@@ -100,25 +100,23 @@ rubyVar = many (alphaNum <|> char '_')
 
 rubyKeyword = many alphaNum
 
-rubyStringSingleQuoted = do
+singleQuotedStr = do
     between (char '\'') (char '\'') (many stringChar)
   where stringChar = ('\'' <$ string "\\'") <|> (noneOf "'")
 
---- FIX
-rubyStringDoubleQuoted = do
-    char '"' 
-    -- FIX
-    xs <- (interpolation <|> nonInterpolation)
-    char '"' 
-    return xs
+doubleQuotedStr = do
+    between (char '"') (char '"') (many stringChar)
+  where stringChar = ('"' <$ string "\\\"") <|> (noneOf "\"")
+
+--- can contain Ruby interpolation
+rubyString = do
+    between (char '"') (char '"') rString
   where 
-    interpolation = between (string "#{") (char '}') (many (noneOf "}"))
-    nonInterpolation = many stringChar 
+    rString = many stringChar
     stringChar = ('"' <$ string "\\\"") <|> (noneOf "\"")
 
-rubyString = rubyStringSingleQuoted <|> rubyStringDoubleQuoted
-
 rubySymbol =  char ':' >> rubyVar
+rubySymbolKey = rubyVar <* char ':'
 
 rubyInlineCode = do
   -- WRONG; fix; eats through commas
@@ -127,13 +125,18 @@ rubyInlineCode = do
   xs <- many (noneOf "}")
   return $ "<%= " ++ xs ++ " %>"
 
-aKey = rubyString <|> rubySymbol
-  
+rocket = spaces >> string "=>" >> spaces 
+aKey = (singleQuotedStr <* rocket)
+  <|> (doubleQuotedStr <* rocket)
+  <|> (rubySymbol <* rocket)
+  <|> (rubySymbolKey <* spaces)
+
+aValue = singleQuotedStr <|> rubyString <|> rubyInlineCode 
+
 kvPair :: IParser (String, String)
 kvPair = do
   k <- aKey
-  spaces >> string "=>" >> spaces
-  v <- rubyString <|> rubyInlineCode
+  v <- aValue 
   return (k, v)
 
 makeClassIdAttrs :: [String] -> [(String, String)]
