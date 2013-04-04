@@ -24,9 +24,11 @@ data InlineContent = RubyInlineContent String
     deriving (Show, Eq)
 
 
+type IsFormTag = Bool
+
 data Expression = Comment String 
     | PlainText String
-    | RubyStartBlock String
+    | RubyStartBlock String IsFormTag
     | RubyMidBlock String
     | RubyExp String
     | Tag String Attrs InlineContent
@@ -40,7 +42,7 @@ container = do
   return b
 
 expression :: IParser Expression
-expression = comment <|> startPlainText <|> rubyBlock <|> rubyExp <|> tag <|> genericExpression
+expression = comment <|> startPlainText <|> (try rubyFormBlock <|> rubyBlock) <|> rubyExp <|> tag <|> genericExpression
   
 rubyBlock = do
     char '-'
@@ -49,8 +51,15 @@ rubyBlock = do
     rest <- manyTill anyChar newline <* spaces
     if (k `elem` midBlockKeywords)
     then return (RubyMidBlock $ k ++ rest)
-    else return (RubyStartBlock $ k ++ rest) 
+    else return (RubyStartBlock (k ++ rest) False) 
   where midBlockKeywords = ["else", "elsif", "rescue", "ensure", "when", "end"]
+
+rubyFormBlock = do
+    char '='
+    spaces 
+    k <- string "form"
+    rest <- manyTill anyChar newline <* spaces
+    return (RubyStartBlock (k ++ rest) True) 
 
 rubyExp = RubyExp <$> ((:) <$> char '=' >> spaces >> manyTill anyChar newline <* spaces)
 
@@ -162,8 +171,11 @@ erb ::  Nesting -> Tree -> [String]
 erb n tree@(Tree (Tag t a i) []) = [pad n ++ startTag tree ++ endTag tree]
 erb n tree@(Tree (Tag t a i) xs) = (pad n ++ startTag tree) : (processChildren n xs ++ [pad n ++ endTag tree])
 
-erb n tree@(Tree (RubyStartBlock s) xs) = 
-    (pad n ++ "<% " ++ s ++ " %>") : processChildren n xs
+erb n tree@(Tree (RubyStartBlock s isform) xs) = 
+    (pad n ++ (starttag isform) ++ s ++ " %>") : processChildren n xs
+  where 
+    starttag True = "<%= "
+    starttag False = "<% "
 erb n tree@(Tree (RubyMidBlock s) xs) = 
     (pad n ++ "<% " ++ s ++ " %>") : processChildren n xs
 
@@ -176,11 +188,11 @@ erb n x@_ = [pad n ++ show x]
 processChildren n xs = concat $ map (erb (n + 1)) $ endtags xs
 
 -- Try to insert "<% end %>" tags correctly
-endtags (x@(Tree (RubyStartBlock _) _):y@(Tree (RubyMidBlock _) _):xs) = 
+endtags (x@(Tree (RubyStartBlock _ _) _):y@(Tree (RubyMidBlock _) _):xs) = 
     x:(endtags (y:xs))  -- just shift the cursor to the right
 endtags (x@(Tree (RubyMidBlock _) _):y@(Tree (RubyMidBlock _) _):xs) = 
     x:(endtags (y:xs))
-endtags (x@(Tree (RubyStartBlock _) _):xs) = x:(Tree (PlainText "<% end %>") []):(endtags xs)
+endtags (x@(Tree (RubyStartBlock _ _) _):xs) = x:(Tree (PlainText "<% end %>") []):(endtags xs)
 endtags (x@(Tree (RubyMidBlock _) _):xs) = x:(Tree (PlainText "<% end %>") []):(endtags xs)
 
 -- Move inline Ruby expressions to child tree

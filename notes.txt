@@ -3,3 +3,7 @@
 deal with comma in the key val expression 
               %div.alt-html{'data-url' => note_path(note, :alt_html => 1), :target => '_blank'}
 
+
+http://www.cse.buffalo.edu/~regan/cse305/RubyBNF.pdf
+
+
