@@ -66,16 +66,16 @@ rubyExp = RubyExp <$> ((:) <$> char '=' >> spaces >> manyTill anyChar newline <*
 tag :: IParser Expression
 tag = do
     tag <- explicitTag <|> return "div"
-    cs <- many dotClass
+    as <- many (dotClass <|> idHash)
     hs <- option [] (hashAttrs)
     c <- parseInlineContent 
     spaces
-    return $ Tag tag (attrs cs hs) c
+    return $ Tag tag (attrs as hs) c
   where 
-    attrs cs hs = filter (\(k, v) -> v /= "") $ 
+    attrs as hs = filter (\(k, v) -> v /= "") $ 
       M.toList $ 
       M.unionWith (\a b -> a ++ " " ++ b) 
-        (M.fromList (makeClassAttrs cs)) 
+        (M.fromList (makeClassIdAttrs as)) 
         (M.fromList hs)
     parseInlineContent = (RubyInlineContent <$> (char '=' >> spaces >> manyTill anyChar newline)) <|> 
         (PlainInlineContent <$> (manyTill anyChar newline)) 
@@ -86,7 +86,8 @@ explicitTag = do
   tag <- many alphaNum
   return tag
 
-dotClass = char '.' >> (many (alphaNum <|> char '-'))
+dotClass = (:) <$> char '.' <*> cssClassOrId
+idHash = (:) <$> char '#' <*> cssClassOrId
 
 hashAttrs = do
   char '{' 
@@ -94,6 +95,7 @@ hashAttrs = do
   char '}'
   return xs
 
+cssClassOrId = many (alphaNum <|> oneOf "-_")
 rubyVar = many (alphaNum <|> char '_')
 
 rubyKeyword = many alphaNum
@@ -134,9 +136,12 @@ kvPair = do
   v <- rubyString <|> rubyInlineCode
   return (k, v)
 
-makeClassAttrs :: [String] -> [(String, String)]
-makeClassAttrs cs = [("class", vals)]
-    where vals = intercalate " " cs 
+makeClassIdAttrs :: [String] -> [(String, String)]
+makeClassIdAttrs cs = ([("class", vals)] ++ [("id", ids)])
+    where vals = intercalate " " classNames 
+          classNames = map tail $ filter (isPrefixOf ".") cs 
+          ids = intercalate " " $ map tail $ filter (isPrefixOf "#") cs
+
 
 comment :: IParser Expression
 comment = do
