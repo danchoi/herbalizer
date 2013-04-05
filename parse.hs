@@ -103,7 +103,7 @@ hashAttrs = do
   return xs
 
 cssClassOrId = many (alphaNum <|> oneOf "-_")
-rubyVar = many (alphaNum <|> char '_')
+rubyIdentifier = many (alphaNum <|> char '_')
 
 rubyKeyword = many alphaNum
 
@@ -123,14 +123,25 @@ rubyString = do
     stringChar = ('"' <$ string "\\\"") <|> (noneOf "\"") 
     replaceInterpolationDelim = (replace "#{" "<%= ") . (replace "}" " %>")
 
-rubySymbol =  char ':' >> rubyVar
-rubySymbolKey = rubyVar <* char ':'
+rubySymbol =  char ':' >> rubyIdentifier
+rubySymbolKey = rubyIdentifier <* char ':'
 
+{-
 rubyInlineCode = do
-  -- WRONG; fix; eats through commas
-  -- FIX but shouldn't eat through all commas
-  -- check for ( ) of method calls, exprs
-  xs <- many (noneOf "}")
+    identifier <- rubyIdentifier <|> return ""
+    xs <- (between (char '(') (char ')') stuffInsideParens) <|> (return "")
+    return $ "<%= " ++ (identifier ++ xs) ++ " %>"
+  where 
+    stuffInsideParens = do
+        -- (++) <$> (many (noneOf "()\n") ) <*> (between (char '(') (char ')') stuffInsideParens)
+        -- (many (noneOf "()\n") ) 
+        a <- many (noneOf "(") 
+        -- b <- (between (char '(') (char ')') stuffInsideParens) <|> return "") 
+        -- c <- many (noneOf ")\n")
+        return a
+-}
+rubyValue = do
+  xs <- (many (noneOf ","))
   return $ "<%= " ++ xs ++ " %>"
 
 rocket = spaces >> string "=>" >> spaces 
@@ -139,7 +150,7 @@ aKey = (singleQuotedStr <* rocket)
   <|> (rubySymbol <* rocket)
   <|> (rubySymbolKey <* spaces)
 
-aValue = singleQuotedStr <|> rubyString <|> rubyInlineCode 
+aValue = singleQuotedStr <|> rubyString <|> rubyValue
 
 kvPair :: IParser (String, String)
 kvPair = do
