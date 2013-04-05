@@ -302,10 +302,10 @@ parse1 s =
             putStrLn . unlines $ erb 0 tree
 
 -- http://stackoverflow.com/questions/15549050/haskell-parsec-how-do-you-use-the-functions-in-text-parsec-indent
-testParse :: (SourcePos -> SourcePos) 
+runIndentParser :: (SourcePos -> SourcePos) 
           -> IndentParser String () a 
           -> String -> Either ParseError a
-testParse f p src = fst $ flip runState (f $ initialPos "") $ runParserT p () "" src
+runIndentParser f p src = fst $ flip runState (f $ initialPos "") $ runParserT p () "" src
 
 topLevelsParser1 = many1 (topLevels)
 
@@ -316,7 +316,7 @@ topLevels = do
     return $ as ++ "\n" ++ concat xs
 
 parseTopLevels s =
-    case (testParse id topLevelsParser1 s) of
+    case (runIndentParser id topLevelsParser1 s) of
       Left err -> putStrLn (show err)
       Right xs -> do
         mapM_ parse1 xs
