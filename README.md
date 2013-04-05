@@ -36,8 +36,8 @@ syntax.  Mainly, it will handle the widely used HAML syntax features for tags,
 classes, ids, attributes, Ruby blocks and expressions, and inline `<script>`
 content.
 
-I wrote it so that I could process the sorts of HAML templates that I
-personally deal with.  YMMV.
+I wrote it so that I could automate at least 90% of work one needs to do to
+into translate HAML templates to ERB. YMMV.
 
 `herbalizer` can't yet recognize some less commonly used HAML contructs such as 
 
