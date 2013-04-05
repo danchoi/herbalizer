@@ -332,5 +332,10 @@ parseTopLevels s =
             mapM_ putStrLn $ processChildren 0 trees
 
 main = do
-    s <- getContents
-    parseTopLevels s
+    args <- getArgs
+    if (null args)
+    then
+      getContents >>= parseTopLevels 
+    else
+      mapM_ (\f -> readFile f >>= parseTopLevels) args
+      
