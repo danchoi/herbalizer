@@ -27,6 +27,10 @@ And then put it on your PATH.
 
     herbalizer < test.haml 
 
+    or
+
+    herbalizer test.haml
+
 
 ## Caveats
 
