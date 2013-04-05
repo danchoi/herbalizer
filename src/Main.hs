@@ -166,6 +166,7 @@ comment :: IParser Expression
 comment = do
   char '/' 
   s <- manyTill anyChar newline
+  spaces
   return $ Comment s
 
 docType :: IParser Expression
@@ -254,7 +255,7 @@ erb n tree@(Tree (RubyMidBlock s) xs) =
 
 erb n tree@(Tree (RubyExp s) _) = [pad n ++ "<%= " ++ s ++ " %>"] 
 erb n tree@(Tree (PlainText s) _) = [pad n ++ s] 
-erb n tree@(Tree (Comment s) _) = [pad n ++ "<%#" ++ s ++ " %>"] 
+erb n tree@(Tree (Comment s) xs) = (pad n ++ "<!--" ++ s) : ((processChildren (n + 1) xs) ++ [pad n  ++ "-->"])
 
 -- DocTypes
 erb n tree@(Tree (DocType s) _) = [d s]
