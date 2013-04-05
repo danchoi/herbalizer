@@ -2,8 +2,7 @@
 
 A HAML to ERB translator, written in Haskell.
 
-This program converts HAML templates to ERB. 
-
+This program converts [HAML](http://haml.info/) templates to [ERB](http://www.stuartellis.eu/articles/erb/).
 
 ## Requirements
 
