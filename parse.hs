@@ -225,6 +225,10 @@ genericExpression = do
 
 type Nesting = Int
 
+-- This is the main processing entrypoint
+processChildren :: Nesting -> [Tree] -> [String]
+processChildren n xs = concat $ map (erb n) $ (rubyEnd xs)
+
 erb ::  Nesting -> Tree -> [String]
 
 erb n tree@(Tree (Tag t a i) []) 
@@ -233,15 +237,15 @@ erb n tree@(Tree (Tag t a i) [])
   where selfClosingTags = ["br", "img", "hr"]
 
 erb n tree@(Tree (Tag t a i) []) = [pad n ++ startTag tree ++ endTag tree]
-erb n tree@(Tree (Tag t a i) xs) = (pad n ++ startTag tree) : (processChildren n xs ++ [pad n ++ endTag tree])
+erb n tree@(Tree (Tag t a i) xs) = (pad n ++ startTag tree) : ((processChildren (n + 1) xs) ++ [pad n ++ endTag tree])
 
 erb n tree@(Tree (RubyStartBlock s isform) xs) = 
-    (pad n ++ (starttag isform) ++ s ++ " %>") : processChildren n xs
+    (pad n ++ (starttag isform) ++ s ++ " %>") : (processChildren (n + 1) xs)
   where 
     starttag True = "<%= "
     starttag False = "<% "
 erb n tree@(Tree (RubyMidBlock s) xs) = 
-    (pad n ++ "<% " ++ s ++ " %>") : processChildren n xs
+    (pad n ++ "<% " ++ s ++ " %>") : (processChildren (n + 1) xs)
 
 erb n tree@(Tree (RubyExp s) _) = [pad n ++ "<%= " ++ s ++ " %>"] 
 erb n tree@(Tree (PlainText s) _) = [pad n ++ s] 
@@ -249,23 +253,22 @@ erb n tree@(Tree (Comment s) _) = [pad n ++ "<%#" ++ s ++ " %>"]
 
 erb n x@_ = [pad n ++ show x]
 
-processChildren n xs = concat $ map (erb (n + 1)) $ (endtags xs)
 
 -- Try to insert "<% end %>" tags correctly
-endtags (x@(Tree (RubyStartBlock _ _) _):y@(Tree (RubyMidBlock _) _):xs) = 
-    x:(endtags (y:xs))  -- just shift the cursor to the right
-endtags (x@(Tree (RubyMidBlock _) _):y@(Tree (RubyMidBlock _) _):xs) = 
-    x:(endtags (y:xs))
-endtags (x@(Tree (RubyStartBlock _ _) _):xs) = x:(Tree (PlainText "<% end %>") []):(endtags xs)
-endtags (x@(Tree (RubyMidBlock _) _):xs) = x:(Tree (PlainText "<% end %>") []):(endtags xs)
+rubyEnd (x@(Tree (RubyStartBlock _ _) _):y@(Tree (RubyMidBlock _) _):xs) = 
+    x:(rubyEnd (y:xs))  -- just shift the cursor to the right
+rubyEnd (x@(Tree (RubyMidBlock _) _):y@(Tree (RubyMidBlock _) _):xs) = 
+    x:(rubyEnd (y:xs))
+rubyEnd (x@(Tree (RubyStartBlock _ _) _):xs) = x:(Tree (PlainText "<% end %>") []):(rubyEnd xs)
+rubyEnd (x@(Tree (RubyMidBlock _) _):xs) = x:(Tree (PlainText "<% end %>") []):(rubyEnd xs)
 
 -- Move inline Ruby expressions to child tree
-endtags (x@(Tree (Tag t a (RubyInlineContent s)) ts):xs) = 
-  (Tree (Tag t a NullInlineContent) ((Tree (RubyExp s) []):ts)):(endtags xs)
+rubyEnd (x@(Tree (Tag t a (RubyInlineContent s)) ts):xs) = 
+  (Tree (Tag t a NullInlineContent) ((Tree (RubyExp s) []):ts)):(rubyEnd xs)
 
 
-endtags (x:xs) = x : (endtags xs)
-endtags [] = []
+rubyEnd (x:xs) = x : (rubyEnd xs)
+rubyEnd [] = []
 
 
 
@@ -294,12 +297,17 @@ pad n = take (n * 2) $ repeat ' '
 
 ------------------------------------------------------------------------
 
-parse1 s = 
-    case iParse container "" s of 
-        Left err -> putStrLn (show err)
-        Right tree -> do 
-            -- putStrLn (show s')
-            putStrLn . unlines $ erb 0 tree
+mapEithers :: (a -> Either b c) -> [a] -> Either b [c]
+mapEithers f (x:xs) = case mapEithers f xs of
+    Left err -> Left err
+    Right ys -> case f x of 
+                  Left err -> Left err
+                  Right y -> Right (y:ys)
+mapEithers _ _ = Right []
+
+------------------------------------------------------------------------
+
+parse1 s = iParse container "" s 
 
 -- http://stackoverflow.com/questions/15549050/haskell-parsec-how-do-you-use-the-functions-in-text-parsec-indent
 runIndentParser :: (SourcePos -> SourcePos) 
@@ -318,8 +326,11 @@ topLevels = do
 parseTopLevels s =
     case (runIndentParser id topLevelsParser1 s) of
       Left err -> putStrLn (show err)
-      Right xs -> do
-        mapM_ parse1 xs
+      Right chunks -> do
+        case (mapEithers parse1 chunks) of
+          Left err -> putStrLn . show $ err
+          Right trees -> 
+            mapM_ putStrLn $ processChildren 0  trees
 
 main = do
     [c] <- getArgs
