@@ -37,7 +37,7 @@ classes, ids, attributes, Ruby blocks and expressions, and inline `<script>`
 content.
 
 I wrote it so that I could automate at least 90% of work one needs to do to
-into translate HAML templates to ERB. YMMV.
+translate HAML templates to ERB. YMMV.
 
 `herbalizer` can't yet recognize some less commonly used HAML contructs such as 
 
