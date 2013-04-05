@@ -15,9 +15,19 @@ From the git project directory,
 
     cabal install 
 
+## Quick setup for Mac OS X Users
+
+I've precompiled the executable for OS X (10.8). You can download it and `chmod +x` it:
+
+    wget http://openmbta.org/herbalizer
+    chmod +x herbalizer
+
+And then put it on your PATH.
+
 ## Usage
 
     herbalizer < test.haml 
+
 
 ## Caveats
 
@@ -43,4 +53,6 @@ commonly used HAML contructs such as
 1. Conditional /[] comments
 1. Haml Comments
 1. Doctype !!! directives
+
+
 
