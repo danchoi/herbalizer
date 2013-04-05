@@ -31,7 +31,9 @@ data InlineContent = RubyInlineContent String
 
 type IsFormTag = Bool
 
-data Expression = Comment String 
+data Expression = 
+      DocType String
+    | Comment String 
     | PlainText String
     | RubyStartBlock String IsFormTag
     | RubyMidBlock String
@@ -47,7 +49,7 @@ container = do
   return b
 
 expression :: IParser Expression
-expression = comment <|> hamlFilter <|> startPlainText <|> (try rubyFormBlock <|> rubyBlock) <|> rubyExp <|> tag <|>  genericExpression
+expression = docType <|> comment <|> hamlFilter <|> startPlainText <|> (try rubyFormBlock <|> rubyBlock) <|> rubyExp <|> tag <|>  genericExpression
   
 rubyBlock = do
     char '-'
@@ -166,6 +168,14 @@ comment = do
   s <- manyTill anyChar newline
   return $ Comment s
 
+docType :: IParser Expression
+docType = do
+    string "!!!"
+    many $ char ' '
+    s <- option [] $ many alphaNum
+    newline
+    return $ DocType s
+
 filterBlock p = withPos $ do
     r <- many (checkIndent >> p)
     return r
@@ -245,6 +255,19 @@ erb n tree@(Tree (RubyMidBlock s) xs) =
 erb n tree@(Tree (RubyExp s) _) = [pad n ++ "<%= " ++ s ++ " %>"] 
 erb n tree@(Tree (PlainText s) _) = [pad n ++ s] 
 erb n tree@(Tree (Comment s) _) = [pad n ++ "<%#" ++ s ++ " %>"] 
+erb n tree@(Tree (DocType s) _) = [d s]
+  where
+    d "" = "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">"
+    d "Strict" = "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Strict//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd\">"
+    d "Frameset" = "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Frameset//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-frameset.dtd\">"
+    d "1.1" = "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.1//EN\" \"http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd\">"
+    d "Basic" = "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML Basic 1.1//EN\" \"http://www.w3.org/TR/xhtml-basic/xhtml-basic11.dtd\">"
+    d "Mobile" = "<!DOCTYPE html PUBLIC \"-//WAPFORUM//DTD XHTML Mobile 1.2//EN\" \"http://www.openmobilealliance.org/tech/DTD/xhtml-mobile12.dtd\">"
+    d "RDFa" = "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML+RDFa 1.0//EN\" \"http://www.w3.org/MarkUp/DTD/xhtml-rdfa-1.dtd\">"
+    d "5" = "<!DOCTYPE html>"
+
+
+    d _ = "TEST"
 
 erb n x@_ = [pad n ++ show x]
 
@@ -287,8 +310,9 @@ showAttrs xs = case map makeAttr xs of
     where makeAttr (k,v) =  intercalate "=" [k, "\"" ++ v ++ "\"" ]
 
 showInlineContent (PlainInlineContent s) = s
-showInlineContent (RubyInlineContent s) = "RUBY: " ++ s
-showInlineContent (NullInlineContent) = ""
+-- should not be reached:
+showInlineContent (RubyInlineContent s) = "RUBY: " ++ s 
+
 showInlineContent s = "\nERROR: No showInlineContent for " ++ (show s) ++ "\n"
 
     

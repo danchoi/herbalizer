@@ -53,7 +53,7 @@ translate HAML templates to ERB. YMMV.
 1. Multiline | syntax
 1. Ruby Interpolation #{} within plain body text; passed through
 1. Conditional /[] comments; passed through
-1. Doctype !!! directives; passed through
+1. XML Doctype (!!! XML) declarations; HTML Doctype declarations are supported
 1. Single-line Ruby expressions that are purely for side effect and not for output; an extra <% end %> will be created. (This is bad practice anyway)
 
 
