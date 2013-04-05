@@ -300,13 +300,6 @@ parse1 s =
         Right tree -> do 
             -- putStrLn (show s')
             putStrLn . unlines $ erb 0 tree
-parse2 s = 
-    case iParse (block container) "" s of 
-        Left err -> putStrLn (show err)
-        Right trees -> do 
-            -- putStrLn (show s')
-            putStrLn . unlines $ concat $ map (erb 0) trees
-
 
 -- http://stackoverflow.com/questions/15549050/haskell-parsec-how-do-you-use-the-functions-in-text-parsec-indent
 testParse :: (SourcePos -> SourcePos) 
@@ -314,7 +307,7 @@ testParse :: (SourcePos -> SourcePos)
           -> String -> Either ParseError a
 testParse f p src = fst $ flip runState (f $ initialPos "") $ runParserT p () "" src
 
-parser3 = many1 (topLevels)
+topLevelsParser1 = many1 (topLevels)
 
 topLevels = do
   withPos $ do
@@ -322,17 +315,13 @@ topLevels = do
     xs <- option [] (try indentedOrBlank)
     return $ as ++ "\n" ++ concat xs
 
-parse3 s =
-    case (testParse id parser3 s) of
+parseTopLevels s =
+    case (testParse id topLevelsParser1 s) of
       Left err -> putStrLn (show err)
       Right xs -> do
         mapM_ parse1 xs
 
-choose "1" = parse1
-choose "2" = parse2
-choose _ = parse3
-
 main = do
     [c] <- getArgs
     s <- getContents
-    (choose c) s
+    parseTopLevels s
