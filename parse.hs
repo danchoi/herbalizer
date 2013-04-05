@@ -263,11 +263,11 @@ pad n = take (n * 2) $ repeat ' '
 
 main = do
     s <- getContents
-    case iParse container "" s of 
+    case iParse (block container) "" s of 
         Left err -> putStrLn (show err)
-        Right s' -> do 
+        Right trees -> do 
             -- putStrLn (show s')
-            putStrLn . unlines $ erb 0 s'
+            putStrLn . unlines $ concat $ map (erb 0) trees
 
 
 
