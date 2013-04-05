@@ -49,10 +49,9 @@ commonly used HAML contructs such as
 1. Escaping HTML &= syntax
 1. Unescaping HTML != syntax
 1. Multiline | syntax
-1. Ruby Interpolation #{} within plain text
-1. Conditional /[] comments
-1. Haml Comments
-1. Doctype !!! directives
+1. Ruby Interpolation #{} within plain text; pass through
+1. Conditional /[] comments; passed through
+1. Doctype !!! directives; passed through
 
 
 
