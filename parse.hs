@@ -181,11 +181,14 @@ hamlFilter = do
   withPos $ do 
     char ':' 
     s <- rubyIdentifier
-    xs <- ((indented >> many (noneOf "\n") <* spaces) <|> many (noneOf "\n") <* spaces)
     spaces
-    ys <- ((indented >> many (noneOf "\n") <* spaces) <|> many (noneOf "\n") <* spaces)
+    xs <- liftM concat $ (option [] (many indentedLine))
+    return $ Tag "script" [] (PlainInlineContent $ "\n" ++ xs ++ "] END")
+  where 
+    indentedLine = do 
+        indented  
+        manyTill anyChar newline <* many (char ' ')
 
-    return $ Tag "script" [] (PlainInlineContent $ xs ++ ys)
 
 startPlainText = do 
   spaces
