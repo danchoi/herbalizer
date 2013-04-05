@@ -50,6 +50,6 @@ translate HAML templates to ERB. YMMV.
 1. Ruby Interpolation #{} within plain body text; passed through
 1. Conditional /[] comments; passed through
 1. Doctype !!! directives; passed through
-
+1. single-line Ruby expressions that are purely for side effect and not for output
 
 
