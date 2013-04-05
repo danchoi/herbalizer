@@ -17,12 +17,11 @@ The GHC Platform
 
     herbalizer < test.haml 
 
-
 ## Caveats
 
 herbalizer can deal with many of the most commonly used features of HAML's
 syntax.  Mainly, it will handle the widely used HAML syntax features for tags,
-classes, ids, attributes, Ruby blocks and expressions, and inline <script>
+classes, ids, attributes, Ruby blocks and expressions, and inline `<script>`
 content.
 
 I wrote it so that I could process the sorts of HAML templates that I
