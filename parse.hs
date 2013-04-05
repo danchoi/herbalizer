@@ -131,14 +131,15 @@ rubySymbol =  char ':' >> rubyIdentifier
 rubySymbolKey = rubyIdentifier <* char ':'
 
 rubyValue = do
-    xs <- many (noneOf ",(") 
+    xs <- many (noneOf ",([")  -- weak attempt to deal with array :class :id attribtues
     rest <- ((lookAhead (char ',') >> return ""))
-            <|> (includeParens (many (noneOf ")")))
+            <|> (betweenStuff '(' ')' )
+            <|> (betweenStuff '[' ']' )
     return $ "<%= " ++ xs ++ rest ++ " %>"
   where 
-    includeParens p = do 
-        xs' <- between (char '(') (char ')') p
-        return $ "(" ++ xs' ++ ")"
+    betweenStuff x y = do
+      xs' <- between (char x) (char y) (many $ noneOf [y])
+      return $ [x] ++ xs' ++ [y]
 
 rocket = spaces >> string "=>" >> spaces 
 aKey = (singleQuotedStr <* rocket)
