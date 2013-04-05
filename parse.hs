@@ -130,22 +130,6 @@ rubyString = do
 rubySymbol =  char ':' >> rubyIdentifier
 rubySymbolKey = rubyIdentifier <* char ':'
 
-{-
-rubyInlineCode = do
-    identifier <- rubyIdentifier <|> return ""
-    xs <- (between (char '(') (char ')') stuffInsideParens) <|> (return "")
-    return $ "<%= " ++ (identifier ++ xs) ++ " %>"
-  where 
-    stuffInsideParens = do
-        -- (++) <$> (many (noneOf "()\n") ) <*> (between (char '(') (char ')') stuffInsideParens)
-        -- (many (noneOf "()\n") ) 
-        a <- many (noneOf "(") 
-        -- b <- (between (char '(') (char ')') stuffInsideParens) <|> return "") 
-        -- c <- many (noneOf ")\n")
-        return a
--}
-
-
 rubyValue = do
     xs <- many (noneOf ",(") 
     rest <- ((lookAhead (char ',') >> return ""))
@@ -237,7 +221,9 @@ erb n tree@(Tree (Tag t a i) [])
     -- basically ignores inline content
   where selfClosingTags = ["br", "img", "hr"]
 
-erb n tree@(Tree (Tag t a i) []) = [pad n ++ startTag tree ++ endTag n tree]
+-- no children; no padding, just tack closing tag on end
+erb n tree@(Tree (Tag t a i) []) = [pad n ++ startTag tree ++ endTag 0 tree] 
+
 erb n tree@(Tree (Tag t a i) xs) = (pad n ++ startTag tree) : ((processChildren (n + 1) xs) ++ [endTag n tree])
 
 erb n tree@(Tree (RubyStartBlock s isform) xs) = 
