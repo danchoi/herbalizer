@@ -236,8 +236,8 @@ erb n tree@(Tree (Tag t a i) [])
     -- basically ignores inline content
   where selfClosingTags = ["br", "img", "hr"]
 
-erb n tree@(Tree (Tag t a i) []) = [pad n ++ startTag tree ++ endTag tree]
-erb n tree@(Tree (Tag t a i) xs) = (pad n ++ startTag tree) : ((processChildren (n + 1) xs) ++ [pad n ++ endTag tree])
+erb n tree@(Tree (Tag t a i) []) = [pad n ++ startTag tree ++ endTag n tree]
+erb n tree@(Tree (Tag t a i) xs) = (pad n ++ startTag tree) : ((processChildren (n + 1) xs) ++ [endTag n tree])
 
 erb n tree@(Tree (RubyStartBlock s isform) xs) = 
     (pad n ++ (starttag isform) ++ s ++ " %>") : (processChildren (n + 1) xs)
@@ -275,8 +275,8 @@ rubyEnd [] = []
 startTag :: Tree -> String
 startTag (Tree (Tag t a i) _) = "<" ++ t ++ showAttrs a ++ ">" ++ showInlineContent i
 
-endTag :: Tree -> String
-endTag (Tree (Tag t _ _) _) = "</" ++ t ++ ">"
+endTag :: Int -> Tree -> String
+endTag n (Tree (Tag t _ _) _) = pad n ++ "</" ++ t ++ ">"
 
 selfClosingTag :: Tree -> String
 selfClosingTag (Tree (Tag t a _) _) = "<" ++ t ++ showAttrs a ++ "/>"
@@ -333,6 +333,5 @@ parseTopLevels s =
             mapM_ putStrLn $ processChildren 0  trees
 
 main = do
-    [c] <- getArgs
     s <- getContents
     parseTopLevels s
