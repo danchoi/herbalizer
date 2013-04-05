@@ -6,9 +6,11 @@ import Control.Applicative ((<*))
 import Data.List (intercalate)
 import Text.Parsec hiding (State)
 import Text.Parsec.Indent
+import Text.Parsec.Pos
 import Data.List (isPrefixOf)
 import qualified Data.Map as M
 import Data.List.Utils
+import System.Environment
 
 type IParser a = ParsecT String () (State SourcePos) a
 
@@ -178,18 +180,26 @@ filterBlock p = withPos $ do
     return r
 
 hamlFilter = do
-  withPos $ do 
+  withPos $ do
     char ':' 
     s <- rubyIdentifier
-    leadWhiteSpace <- option "" (many space) 
-    xs <- liftM concat $ (option [] (many indentedLine))
-    return $ Tag "script" [] (PlainInlineContent $ leadWhiteSpace ++ xs ++ "\n")
-  where 
-    indentedLine = do 
-        indented  
-        xs <- manyTill anyChar newline 
-        rest <- many (char ' ')
-        return $ xs ++ "\n" ++ rest
+    newline
+    xs <- indentedOrBlank
+    return $ Tag "script" [] (PlainInlineContent $ concat xs ++ "\n")
+
+indentedOrBlank = many1 (try blankLine <|> try indentedLine)
+
+indentedLine :: IParser String
+indentedLine = do
+    a <- many $ oneOf " \t"
+    indented
+    xs <- manyTill anyChar newline 
+    return $ a ++ xs ++ "\n"
+
+blankLine = do
+    a <- many $ oneOf " \t"
+    newline 
+    return $ a ++ "\n"
 
 
 startPlainText = do 
@@ -281,8 +291,13 @@ pad n = take (n * 2) $ repeat ' '
 
 ------------------------------------------------------------------------
 
-main = do
-    s <- getContents
+parse1 s = 
+    case iParse container "" s of 
+        Left err -> putStrLn (show err)
+        Right tree -> do 
+            -- putStrLn (show s')
+            putStrLn . unlines $ erb 0 tree
+parse2 s = 
     case iParse (block container) "" s of 
         Left err -> putStrLn (show err)
         Right trees -> do 
@@ -290,5 +305,31 @@ main = do
             putStrLn . unlines $ concat $ map (erb 0) trees
 
 
+-- http://stackoverflow.com/questions/15549050/haskell-parsec-how-do-you-use-the-functions-in-text-parsec-indent
+testParse :: (SourcePos -> SourcePos) 
+          -> IndentParser String () a 
+          -> String -> Either ParseError a
+testParse f p src = fst $ flip runState (f $ initialPos "") $ runParserT p () "" src
 
+parser3 = many1 (topLevels)
 
+topLevels = do
+  withPos $ do
+    as <- manyTill anyChar newline
+    xs <- option [] (try indentedOrBlank)
+    return $ as ++ "\n" ++ concat xs
+
+parse3 s =
+    case (testParse id parser3 s) of
+      Left err -> putStrLn (show err)
+      Right xs -> do
+        mapM_ parse1 xs
+
+choose "1" = parse1
+choose "2" = parse2
+choose _ = parse3
+
+main = do
+    [c] <- getArgs
+    s <- getContents
+    (choose c) s
