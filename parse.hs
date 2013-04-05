@@ -140,9 +140,17 @@ rubyInlineCode = do
         -- c <- many (noneOf ")\n")
         return a
 -}
+
+
 rubyValue = do
-  xs <- (many (noneOf ","))
-  return $ "<%= " ++ xs ++ " %>"
+    xs <- many (noneOf ",(") 
+    rest <- ((lookAhead (char ',') >> return ""))
+            <|> (includeParens (many (noneOf ")")))
+    return $ "<%= " ++ xs ++ rest ++ " %>"
+  where 
+    includeParens p = do 
+        xs' <- between (char '(') (char ')') p
+        return $ "(" ++ xs' ++ ")"
 
 rocket = spaces >> string "=>" >> spaces 
 aKey = (singleQuotedStr <* rocket)
