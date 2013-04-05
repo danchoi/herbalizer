@@ -158,7 +158,8 @@ kvPair = do
   v <- aValue 
   return (k, v)
 
-
+-- TODO HTML Comments are not rendered like HAML renders them
+-- also HAML -# style comments could be rendered
 comment :: IParser Expression
 comment = do
   char '/' 
