@@ -18,7 +18,6 @@ The GHC Platform
     herbalizer < test.haml 
 
 
-
 ## Caveats
 
 herbalizer can deal with many of the most commonly used features of HAML's
