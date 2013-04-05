@@ -72,6 +72,7 @@ tag = do
     tag <- explicitTag <|> return "div"
     as <- many (dotClass <|> idHash)
     hs <- option [] (hashAttrs)
+    many $ oneOf " \t"
     c <- parseInlineContent 
     spaces
     return $ Tag tag (attrs as hs) c
