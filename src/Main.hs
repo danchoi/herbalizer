@@ -90,8 +90,8 @@ tag = do
         <|> return NullInlineContent
 
 makeClassIdAttrs :: [String] -> [(String, String)]
-makeClassIdAttrs cs = classes ++ [("id", ids)]
-    where classes = map (\x -> ("class", x)) $ map tail $ filter ("." `isPrefixOf`) cs 
+makeClassIdAttrs cs = classes : [("id", ids)]
+    where classes = ("class", intercalate " " $ map tail $ filter ("." `isPrefixOf`) cs )
           ids = intercalate " " $ map tail $ filter (isPrefixOf "#") cs
 
 
