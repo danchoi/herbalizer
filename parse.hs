@@ -43,7 +43,7 @@ container = do
   return b
 
 expression :: IParser Expression
-expression = comment <|> startPlainText <|> (try rubyFormBlock <|> rubyBlock) <|> rubyExp <|> tag <|> genericExpression
+expression = comment <|> hamlFilter <|> startPlainText <|> (try rubyFormBlock <|> rubyBlock) <|> rubyExp <|> tag <|>  genericExpression
   
 rubyBlock = do
     char '-'
@@ -173,6 +173,20 @@ comment = do
   s <- manyTill anyChar newline
   return $ Comment s
 
+filterBlock p = withPos $ do
+    r <- many (checkIndent >> p)
+    return r
+
+hamlFilter = do
+  withPos $ do 
+    char ':' 
+    s <- rubyIdentifier
+    xs <- ((indented >> many (noneOf "\n") <* spaces) <|> many (noneOf "\n") <* spaces)
+    spaces
+    ys <- ((indented >> many (noneOf "\n") <* spaces) <|> many (noneOf "\n") <* spaces)
+
+    return $ Tag "script" [] (PlainInlineContent $ xs ++ ys)
+
 startPlainText = do 
   spaces
   a <- noneOf "-=.#%" 
@@ -219,7 +233,7 @@ erb n tree@(Tree (Comment s) _) = [pad n ++ "<%#" ++ s ++ " %>"]
 
 erb n x@_ = [pad n ++ show x]
 
-processChildren n xs = concat $ map (erb (n + 1)) $ endtags xs
+processChildren n xs = concat $ map (erb (n + 1)) $ (endtags xs)
 
 -- Try to insert "<% end %>" tags correctly
 endtags (x@(Tree (RubyStartBlock _ _) _):y@(Tree (RubyMidBlock _) _):xs) = 
@@ -232,6 +246,7 @@ endtags (x@(Tree (RubyMidBlock _) _):xs) = x:(Tree (PlainText "<% end %>") []):(
 -- Move inline Ruby expressions to child tree
 endtags (x@(Tree (Tag t a (RubyInlineContent s)) ts):xs) = 
   (Tree (Tag t a NullInlineContent) ((Tree (RubyExp s) []):ts)):(endtags xs)
+
 
 endtags (x:xs) = x : (endtags xs)
 endtags [] = []
