@@ -21,9 +21,16 @@ The GHC Platform
 
 ## Caveats
 
-herbalizer can deal with many of the most commonly used features of HAML's syntax. 
+herbalizer can deal with many of the most commonly used features of HAML's
+syntax.  Mainly, it will handle the widely used HAML syntax features for tags,
+classes, ids, attributes, Ruby blocks and expressions, and inline <script>
+content.
 
-But it can't yet recognize some less commonly used HAML contructs such as 
+I wrote it so that I could process the sorts of HAML templates that I
+personally deal with.  YMMV.
+
+But as this is an alpha release, `herbalizer` can't yet recognize some less
+commonly used HAML contructs such as 
 
 1. HTML-style () Attributes
 1. :class and :id attributes specified as a Ruby array
