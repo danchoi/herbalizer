@@ -255,6 +255,8 @@ erb n tree@(Tree (RubyMidBlock s) xs) =
 erb n tree@(Tree (RubyExp s) _) = [pad n ++ "<%= " ++ s ++ " %>"] 
 erb n tree@(Tree (PlainText s) _) = [pad n ++ s] 
 erb n tree@(Tree (Comment s) _) = [pad n ++ "<%#" ++ s ++ " %>"] 
+
+-- DocTypes
 erb n tree@(Tree (DocType s) _) = [d s]
   where
     d "" = "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">"
@@ -283,6 +285,10 @@ rubyEnd (x@(Tree (RubyMidBlock _) _):xs) = x:(Tree (PlainText "<% end %>") []):(
 -- Move inline Ruby expressions to child tree
 rubyEnd (x@(Tree (Tag t a (RubyInlineContent s)) ts):xs) = 
   (Tree (Tag t a NullInlineContent) ((Tree (RubyExp s) []):ts)):(rubyEnd xs)
+
+
+-- erb content should pass through
+rubyEnd (x@(Tree (Tag "erb" a (HamlFilterContent s)) ts):xs) = (Tree (PlainText s) []):(rubyEnd xs)
 
 -- Move HamlFilterContent to child tree
 rubyEnd (x@(Tree (Tag t a (HamlFilterContent s)) ts):xs) = (Tree (Tag t a NullInlineContent) ((Tree (PlainText ('\n':s)) []):ts)):(rubyEnd xs)

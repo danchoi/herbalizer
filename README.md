@@ -46,7 +46,7 @@ translate HAML templates to ERB. YMMV.
 
 1. HTML-style () Attributes
 1. :class and :id attributes specified as a Ruby array
-1. Filters besides `:javascript`; these are just rendered inside pseudo-tags named after the filter
+1. Filters besides `:javascript` and `:erb`; these are just rendered inside pseudo-tags named after the filter
 1. Whitespace preservation sytnax
 1. Escaping HTML &= syntax
 1. Unescaping HTML != syntax
