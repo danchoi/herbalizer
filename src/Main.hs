@@ -56,6 +56,8 @@ rubyBlock = do
     rest <- manyTill anyChar newline <* spaces
     if (k `elem` midBlockKeywords)
     then return (RubyMidBlock $ k ++ rest)
+    -- TODO : we need to recognize Ruby expression expression included purely for a side effect,
+    -- e.g. "- localvar = Time.now"
     else return (RubyStartBlock (k ++ rest) False) 
   where midBlockKeywords = ["else", "elsif", "rescue", "ensure", "when", "end"]
 
