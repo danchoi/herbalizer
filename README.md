@@ -1,6 +1,6 @@
 # herbalizer
 
-A Haml to Erb translator, written in Haskell.
+A HAML to ERB translator, written in Haskell.
 
 This program converts HAML templates to ERB. 
 
