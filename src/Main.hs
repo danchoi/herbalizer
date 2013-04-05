@@ -285,8 +285,9 @@ rubyEnd (x@(Tree (Tag t a (RubyInlineContent s)) ts):xs) =
   (Tree (Tag t a NullInlineContent) ((Tree (RubyExp s) []):ts)):(rubyEnd xs)
 
 -- Move HamlFilterContent to child tree
-rubyEnd (x@(Tree (Tag t a (HamlFilterContent s)) ts):xs) = 
-  (Tree (Tag t a NullInlineContent) ((Tree (PlainText ('\n':s)) []):ts)):(rubyEnd xs)
+rubyEnd (x@(Tree (Tag t a (HamlFilterContent s)) ts):xs) = (Tree (Tag t a NullInlineContent) ((Tree (PlainText ('\n':s)) []):ts)):(rubyEnd xs)
+
+
 
 
 
@@ -310,6 +311,7 @@ showAttrs xs = case map makeAttr xs of
     where makeAttr (k,v) =  intercalate "=" [k, "\"" ++ v ++ "\"" ]
 
 showInlineContent (PlainInlineContent s) = s
+showInlineContent (NullInlineContent) = ""
 -- should not be reached:
 showInlineContent (RubyInlineContent s) = "RUBY: " ++ s 
 
