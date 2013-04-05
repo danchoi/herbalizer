@@ -75,12 +75,18 @@ tag = do
   where 
     attrs as hs = filter (\(k, v) -> v /= "") $ 
       M.toList $ 
-      M.unionWith (\a b -> a ++ " " ++ b) 
-        (M.fromList (makeClassIdAttrs as)) 
+      M.unionWith (\a b -> intercalate " " (filter (/= "") [a,b]))
         (M.fromList hs)
+        (M.fromList (makeClassIdAttrs as)) 
     parseInlineContent = (RubyInlineContent <$> (char '=' >> spaces >> manyTill anyChar newline)) <|> 
         (PlainInlineContent <$> (manyTill anyChar newline)) 
         <|> return NullInlineContent
+
+makeClassIdAttrs :: [String] -> [(String, String)]
+makeClassIdAttrs cs = classes ++ [("id", ids)]
+    where classes = map (\x -> ("class", x)) $ map tail $ filter ("." `isPrefixOf`) cs 
+          ids = intercalate " " $ map tail $ filter (isPrefixOf "#") cs
+
 
 explicitTag = do
   char '%'
@@ -140,12 +146,6 @@ kvPair = do
   k <- aKey
   v <- aValue 
   return (k, v)
-
-makeClassIdAttrs :: [String] -> [(String, String)]
-makeClassIdAttrs cs = ([("class", vals)] ++ [("id", ids)])
-    where vals = intercalate " " classNames 
-          classNames = map tail $ filter (isPrefixOf ".") cs 
-          ids = intercalate " " $ map tail $ filter (isPrefixOf "#") cs
 
 
 comment :: IParser Expression
