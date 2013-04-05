@@ -168,10 +168,13 @@ filterBlock p = withPos $ do
 hamlFilter = do
   withPos $ do
     char ':' 
-    s <- rubyIdentifier
+    s <- many $ alphaNum
+    many (oneOf " \t")
     newline
     xs <- indentedOrBlank
-    return $ Tag "script" [] (HamlFilterContent $ concat xs ++ "\n")
+    return $ Tag (convertToTag s) [] (HamlFilterContent $ concat xs)
+  where convertToTag "javascript" = "script"
+        convertToTag s = s
 
 indentedOrBlank = many1 (try blankLine <|> try indentedLine)
 
@@ -253,6 +256,11 @@ rubyEnd (x@(Tree (RubyMidBlock _) _):xs) = x:(Tree (PlainText "<% end %>") []):(
 rubyEnd (x@(Tree (Tag t a (RubyInlineContent s)) ts):xs) = 
   (Tree (Tag t a NullInlineContent) ((Tree (RubyExp s) []):ts)):(rubyEnd xs)
 
+-- Move HamlFilterContent to child tree
+rubyEnd (x@(Tree (Tag t a (HamlFilterContent s)) ts):xs) = 
+  (Tree (Tag t a NullInlineContent) ((Tree (PlainText ('\n':s)) []):ts)):(rubyEnd xs)
+
+
 
 rubyEnd (x:xs) = x : (rubyEnd xs)
 rubyEnd [] = []
@@ -276,7 +284,7 @@ showAttrs xs = case map makeAttr xs of
 showInlineContent (PlainInlineContent s) = s
 showInlineContent (RubyInlineContent s) = "RUBY: " ++ s
 showInlineContent (NullInlineContent) = ""
-showInlineContent (HamlFilterContent s) = "\n" ++ s ++ "\n"
+showInlineContent s = "\nERROR: No showInlineContent for " ++ (show s) ++ "\n"
 
     
 pad :: Int -> String
@@ -316,8 +324,8 @@ parseTopLevels s =
       Right chunks -> do
         case (mapEithers parse1 chunks) of
           Left err -> putStrLn . show $ err
-          Right trees -> 
-            mapM_ putStrLn $ processChildren 0  trees
+          Right trees -> do
+            mapM_ putStrLn $ processChildren 0 trees
 
 main = do
     s <- getContents
