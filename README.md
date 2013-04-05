@@ -39,8 +39,7 @@ content.
 I wrote it so that I could process the sorts of HAML templates that I
 personally deal with.  YMMV.
 
-But as this is an alpha release, `herbalizer` can't yet recognize some less
-commonly used HAML contructs such as 
+`herbalizer` can't yet recognize some less commonly used HAML contructs such as 
 
 1. HTML-style () Attributes
 1. :class and :id attributes specified as a Ruby array
