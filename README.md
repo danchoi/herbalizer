@@ -11,6 +11,8 @@ The GHC Platform
 
 ## Install
 
+From the git project directory,
+
     cabal install 
 
 ## Usage
