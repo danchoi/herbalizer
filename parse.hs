@@ -24,6 +24,7 @@ type Attrs = [(String, String)]
 data InlineContent = RubyInlineContent String 
     | PlainInlineContent String
     | NullInlineContent
+    | HamlFilterContent String
     deriving (Show, Eq)
 
 
@@ -185,7 +186,7 @@ hamlFilter = do
     s <- rubyIdentifier
     newline
     xs <- indentedOrBlank
-    return $ Tag "script" [] (PlainInlineContent $ concat xs ++ "\n")
+    return $ Tag "script" [] (HamlFilterContent $ concat xs ++ "\n")
 
 indentedOrBlank = many1 (try blankLine <|> try indentedLine)
 
@@ -285,6 +286,8 @@ showAttrs xs = case map makeAttr xs of
 showInlineContent (PlainInlineContent s) = s
 showInlineContent (RubyInlineContent s) = "RUBY: " ++ s
 showInlineContent (NullInlineContent) = ""
+showInlineContent (HamlFilterContent s) = "\n" ++ s ++ "\n"
+
     
 pad :: Int -> String
 pad n = take (n * 2) $ repeat ' ' 
