@@ -48,6 +48,7 @@ translate HAML templates to ERB. YMMV.
 1. :class and :id attributes specified as a Ruby array
 1. Filters besides `:javascript` and `:erb`; these are just rendered inside pseudo-tags named after the filter
 1. Whitespace removal sytnax
+1. Object reference syntax
 1. Escaping HTML &= syntax
 1. Unescaping HTML != syntax
 1. Multiline | syntax
