@@ -42,9 +42,11 @@ content.
 I wrote it so that I could automate at least 90% of work I need to do to
 translate HAML templates to ERB. YMMV.
 
-`herbalizer` can't yet recognize some less commonly used HAML contructs such as 
+`herbalizer` can't yet recognize some less commonly used [HAML
+contructs](http://haml.info/docs/yardoc/file.REFERENCE.html) such
+as 
 
-1. HTML-style () Attributes
+1. HTML-style () attributes e.g. `%a(title=@title href=href)`
 1. :class and :id attributes specified as a Ruby array
 1. Filters besides `:javascript` and `:erb`; these are just rendered inside pseudo-tags named after the filter
 1. Whitespace removal sytnax
