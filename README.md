@@ -59,7 +59,7 @@ translate HAML templates to ERB. YMMV.
 
 Eventually I hope to cover all the edge cases. As you can see, HAML syntax is
 not compact. It's getting more baroque over time, and so is the Ruby parser
-that powers it. I like ERB for this reason. It's simple, classic, and won't
-change. I like angle brackets.
+that powers it. I like ERB. It's simple, classic, and won't change. I like
+angle brackets.
 
 
