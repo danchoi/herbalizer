@@ -238,7 +238,7 @@ erb ::  Nesting -> Tree -> [String]
 erb n tree@(Tree (Tag t a i) []) 
     | t `elem` selfClosingTags = [pad n ++ selfClosingTag tree]
     -- basically ignores inline content
-  where selfClosingTags = ["br", "img", "hr"]
+  where selfClosingTags = ["br", "img", "hr", "meta"]
 
 -- no children; no padding, just tack closing tag on end
 erb n tree@(Tree (Tag t a i) []) = [pad n ++ startTag tree ++ endTag 0 tree] 
