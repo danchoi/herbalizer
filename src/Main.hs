@@ -348,9 +348,9 @@ runIndentParser :: (SourcePos -> SourcePos)
           -> String -> Either ParseError a
 runIndentParser f p src = fst $ flip runState (f $ initialPos "") $ runParserT p () "" src
 
-topLevelsParser1 = many1 (topLevels)
+topLevelsParser1 = many1 (topLevelItem)
 
-topLevels = do
+topLevelItem = do
   withPos $ do
     as <- manyTill anyChar newline
     xs <- option [] (try indentedOrBlank)

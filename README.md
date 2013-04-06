@@ -27,10 +27,16 @@ And then put it on your PATH.
 
     herbalizer < test.haml 
 
-    or
+You can also pass filenames are arguments:
 
     herbalizer test.haml
 
+In the Vim editor, you can also write HAML syntax and filter those lines
+through `herbalizer` to translate them to ERB/HTML, like so:
+
+    :3,10!herbalizer
+
+But this only works if you start nesting tags from the left margin.
 
 ## Caveats
 
