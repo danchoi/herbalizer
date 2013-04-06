@@ -27,7 +27,7 @@ And then put it on your PATH.
 
     herbalizer < test.haml 
 
-You can also pass filenames are arguments:
+You can also pass filenames as arguments:
 
     herbalizer test.haml
 
