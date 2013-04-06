@@ -6,7 +6,7 @@ This program converts [HAML](http://haml.info/) templates to [ERB](http://www.st
 
 ## Requirements
 
-The GHC Platform
+The GHC Platform, unless you're using a precompiled binary.
 
 ## Install
 
