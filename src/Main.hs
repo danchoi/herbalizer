@@ -206,6 +206,9 @@ blankLine = do
     newline 
     return $ a ++ "\n"
 
+-- TODO; check how this deals with plain text that actually starts with these characters
+-- Not sure what HAML's escaping rules are here; again HAML makes things unclear & make you
+-- to look at docs
 
 startPlainText = do 
   spaces
