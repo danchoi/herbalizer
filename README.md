@@ -58,7 +58,7 @@ translate HAML templates to ERB. YMMV.
 1. Single-line Ruby expressions that are purely for side effect and not for output; an extra <% end %> will be created. (This is bad practice anyway)
 
 Eventually I hope to cover all the edge cases. As you can see, HAML syntax is
-not compact. It's getting more baroque over time, and so is the Ruby parser
+not [compact](http://www.faqs.org/docs/artu/ch04s02.html). It's getting more baroque over time, and so is the Ruby parser
 that powers it. I like ERB. It's simple, classic, and won't change. I like
 angle brackets.
 
