@@ -34,7 +34,7 @@ And then put it on your PATH.
 
 ## Caveats
 
-herbalizer can deal with the most commonly used features of HAML's
+**herbalizer** can deal with the most commonly used features of HAML's
 syntax.  Mainly, it will handle the widely used HAML syntax features for tags,
 classes, ids, attributes, Ruby blocks and expressions, and inline `<script>`
 content.
@@ -42,7 +42,7 @@ content.
 I wrote it so that I could automate at least 90% of work I need to do to
 translate HAML templates to ERB. YMMV.
 
-`herbalizer` can't yet recognize some less commonly used [HAML
+**herbalizer** can't yet recognize some less commonly used [HAML
 constructs](http://haml.info/docs/yardoc/file.REFERENCE.html) such
 as 
 
