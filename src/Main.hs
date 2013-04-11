@@ -156,7 +156,7 @@ aValue = singleQuotedStr <|> rubyString <|> rubyValue
 
 kvPair :: IParser (String, String)
 kvPair = do
-  k <- aKey
+  k <- (many $ oneOf " \t") >> aKey 
   v <- aValue <* (many $ oneOf " \t")
   return (k, v)
 
