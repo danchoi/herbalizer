@@ -157,7 +157,7 @@ aValue = singleQuotedStr <|> rubyString <|> rubyValue
 kvPair :: IParser (String, String)
 kvPair = do
   k <- aKey
-  v <- aValue 
+  v <- aValue <* (many $ oneOf " \t")
   return (k, v)
 
 -- TODO HTML Comments are not rendered like HAML renders them
