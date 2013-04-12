@@ -59,9 +59,10 @@ as
 1. XML Doctype (!!! XML) declarations; HTML Doctype declarations are supported
 1. Single-line Ruby expressions that are purely for side effect and not for output; an extra <% end %> will be created. (This is bad practice anyway)
 
-Eventually I hope to cover more of these edge cases. As you can see, HAML syntax is
-not mnemonically [compact](http://www.faqs.org/docs/artu/ch04s02.html). It's getting more baroque over time, and so is the Ruby parser
-that powers it. I like ERB. It's simple, classic, and won't change. I like
-angle brackets.
+Eventually I hope to cover more of these edge cases. As you can see, HAML
+syntax is not mnemonically
+[compact](http://www.faqs.org/docs/artu/ch04s02.html). And it's getting less so
+over time, and so is the Ruby parser that powers it. I like ERB. It's
+simple, classic, and won't change. I like angle brackets.
 
 
