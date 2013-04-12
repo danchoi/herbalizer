@@ -66,7 +66,8 @@ rubyBlock = do
 rubyFormBlock = do
     char '='
     spaces 
-    k <- string "form"
+    -- simple_form_for, form_for, etc
+    k <- string "form" <|> string "simple_form" 
     rest <- manyTill anyChar newline <* spaces
     return (RubyStartBlock (k ++ rest) True) 
 
