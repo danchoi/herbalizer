@@ -22,6 +22,7 @@ Executable herbalizer
     indents,
     MissingH,
     containers,
+    regex-posix,
     mtl
   ghc-options: -threaded -Wall -fwarn-tabs -funbox-strict-fields -O2 -fno-warn-orphans -fno-warn-unused-do-bind
 
