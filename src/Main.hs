@@ -11,6 +11,8 @@ import Text.Parsec.Pos
 import Data.List (isPrefixOf)
 import qualified Data.Map as M
 import Data.List.Utils
+import Data.List (isInfixOf)
+import Text.Regex.Posix
 import System.Environment
 
 type IParser a = ParsecT String () (State SourcePos) a
@@ -49,7 +51,7 @@ container = do
   return b
 
 expression :: IParser Expression
-expression = docType <|> comment <|> hamlFilter <|> startPlainText <|> (try rubyFormBlock <|> rubyBlock) <|> rubyExp <|> tag <|>  genericExpression
+expression = docType <|> comment <|> hamlFilter <|> startPlainText <|> rubyBlock <|> rubyExp <|> tag <|>  genericExpression
   
 rubyBlock = do
     char '-'
@@ -60,18 +62,15 @@ rubyBlock = do
     then return (RubyMidBlock $ k ++ rest)
     -- TODO : we need to recognize Ruby expression expression included purely for a side effect,
     -- e.g. "- localvar = Time.now"
-    else return (RubyStartBlock (k ++ rest) False) 
+    else return (RubyStartBlock (k ++ rest) False)
   where midBlockKeywords = ["else", "elsif", "rescue", "ensure", "when", "end"]
 
-rubyFormBlock = do
-    char '='
-    spaces 
-    -- simple_form_for, form_for, etc
-    k <- string "form" <|> string "simple_form" 
-    rest <- manyTill anyChar newline <* spaces
-    return (RubyStartBlock (k ++ rest) True) 
 
-rubyExp = RubyExp <$> ((:) <$> char '=' >> spaces >> manyTill anyChar newline <* spaces)
+rubyExp = do
+  line <- ((:) <$> char '=' >> spaces >> manyTill anyChar newline <* spaces)
+  if (line =~ "form_for" || line =~ "fields_for") 
+  then return (RubyStartBlock line True)
+  else return (RubyExp  line)
 
 tag :: IParser Expression
 tag = do
