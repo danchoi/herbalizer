@@ -7,13 +7,14 @@ This program converts [HAML](http://haml.info/) templates to [ERB](http://www.st
 ## Why
 
 HAML syntax may look more compact, but on a mnemonic level, HAML is
-[anti-compact](http://www.faqs.org/docs/artu/ch04s02.html). 
+[anti-compact](http://www.faqs.org/docs/artu/ch04s02.html).  Mnenomically
+speaking, HAML has a large footprint.  It takes a time to memorize all its
+syntax rules and options, which continue to increase over time. 
 
-ERB is simpler, easier to remember the rules for, and more accessible to anyone familiar with
-HTML.  Mnenomically speaking, it has a much  smaller footprint than HAML. It's easier to
-teach to beginners and other people who can help you maintain your view
-templates. 
-
+ERB is simpler, easier to remember the rules for, and more accessible to anyone
+familiar with HTML.  ERB is easier to teach to beginners. While HAML may
+someday be supplanted by the even more keystroke-economizing
+[Slim](http://slim-lang.com/), ERB view templates will stand the test of time.
 
 ## Requirements
 
