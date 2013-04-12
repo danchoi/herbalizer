@@ -9,7 +9,7 @@ This program converts [HAML](http://haml.info/) templates to [ERB](http://www.st
 HAML syntax may look more compact, but on a mnemonic level, HAML is
 [anti-compact](http://www.faqs.org/docs/artu/ch04s02.html). 
 
-ERB is simpler, easier to remember, and more accessible to anyone familiar with
+ERB is simpler, easier to remember the rules for, and more accessible to anyone familiar with
 HTML.  Mnenomically speaking, it has a much  smaller footprint than HAML. It's easier to
 teach to beginners and other people who can help you maintain your view
 templates. 
