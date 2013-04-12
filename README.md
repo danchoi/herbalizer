@@ -4,6 +4,17 @@ A HAML to ERB translator, written in Haskell.
 
 This program converts [HAML](http://haml.info/) templates to [ERB](http://www.stuartellis.eu/articles/erb/).
 
+## Why
+
+HAML syntax may look more compact, but on a mnemonic level, HAML is
+[anti-compact](http://www.faqs.org/docs/artu/ch04s02.html). 
+
+ERB is simpler, easier to remember, and more accessible to anyone familiar with
+HTML.  Menomically, it has a much  smaller footprint than HAML. It's easier to
+teach to beginners and other people who can help you maintain your view
+templates. 
+
+
 ## Requirements
 
 The GHC Platform, unless you're using a precompiled binary.
@@ -59,13 +70,6 @@ as
 1. XML Doctype (!!! XML) declarations; HTML Doctype declarations are supported
 1. Single-line Ruby expressions that are purely for side effect and not for output; an extra <% end %> will be created. (This is bad practice anyway)
 
-Eventually I hope to cover more of these edge cases. As you can see, HAML
-syntax is not mnemonically
-[compact](http://www.faqs.org/docs/artu/ch04s02.html). It's getting even less so
-over time. 
-
-I like ERB. It's simple and won't change. It has a cognitively small footprint.
-It's easier to teach to beginners and other people who can help you maintain
-and edit your view templates.
+Eventually I hope to cover more of these edge cases. 
 
 
