@@ -65,10 +65,10 @@ rubyBlock = do
     else return (RubyStartBlock (k ++ rest) False)
   where midBlockKeywords = ["else", "elsif", "rescue", "ensure", "when", "end"]
 
-
 rubyExp = do
   line <- ((:) <$> char '=' >> spaces >> manyTill anyChar newline <* spaces)
-  if (line =~ "form_for" || line =~ "fields_for") 
+  -- slightly hackish attempt to deal with simple_for_form (damn you plataformatec!)
+  if (line =~ "form_for" || line =~ "fields_for" || (line =~ "\\.association " && line =~ " do") || (line =~ "\\.input" && line =~ " do"))
   then return (RubyStartBlock line True)
   else return (RubyExp  line)
 
