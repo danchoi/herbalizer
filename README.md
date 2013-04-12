@@ -61,8 +61,11 @@ as
 
 Eventually I hope to cover more of these edge cases. As you can see, HAML
 syntax is not mnemonically
-[compact](http://www.faqs.org/docs/artu/ch04s02.html). And it's getting less so
-over time, and so is the Ruby parser that powers it. I like ERB. It's
-simple, classic, and won't change. I like angle brackets.
+[compact](http://www.faqs.org/docs/artu/ch04s02.html). It's getting even less so
+over time. 
+
+I like ERB. It's simple and won't change. It has a cognitively small footprint.
+It's easier to teach to beginners and other people who can help you maintain
+and edit your view templates.
 
 
