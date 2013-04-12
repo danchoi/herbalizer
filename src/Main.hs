@@ -136,9 +136,10 @@ rubyString = do
 rubySymbol =  char ':' >> rubyIdentifier
 rubySymbolKey = rubyIdentifier <* char ':'
 
+-- really, we need to parse full-blown Ruby expressions
 rubyValue = do
-    xs <- many (noneOf ",([")  -- weak attempt to deal with array :class :id attribtues
-    rest <- ((lookAhead (char ',') >> return ""))
+    xs <- many (noneOf ",([ ")  <* spaces
+    rest <- ((lookAhead (oneOf ",}") >> return ""))
             <|> (betweenStuff '(' ')' )
             <|> (betweenStuff '[' ']' )
     return $ "<%= " ++ xs ++ rest ++ " %>"
@@ -158,7 +159,7 @@ aValue = singleQuotedStr <|> rubyString <|> rubyValue
 kvPair :: IParser (String, String)
 kvPair = do
   k <- (many $ oneOf " \t") >> aKey 
-  v <- aValue <* (many $ oneOf " \t")
+  v <- spaces >> aValue <* (many $ oneOf " \t")
   return (k, v)
 
 -- TODO HTML Comments are not rendered like HAML renders them
