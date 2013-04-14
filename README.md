@@ -69,8 +69,8 @@ as
 1. HAML Comments (#-) not processed
 1. XML Doctype (!!! XML) declarations; HTML Doctype declarations are supported
 
-Eventually I hope to cover more of these edge cases. 
-
+Maybe **herbalizer** will cover more of these edge cases over time. But the
+current version should be fine for converting typical HAML templates.
 
 ## Related reading
 
