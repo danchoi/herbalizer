@@ -13,7 +13,7 @@ the syntax reference documentation on hand to write or decipher it.
 ERB is simpler, easier to remember the rules for, and more accessible to anyone
 familiar with HTML.  ERB templates are easier to teach to beginners and easier
 to collaborate on with a wider range of people, like designers. And for some people ERB is 
-easier on the eyes, with its gently undulating nestings.
+easier on the eyes, with its undulating nestings.
 
 ## Requirements
 
