@@ -135,7 +135,7 @@ rubySymbolKey = rubyIdentifier <* char ':'
 
 -- really, we need to parse full-blown Ruby expressions
 rubyValue = do
-    xs <- many (noneOf ",([ \t")  <* spaces
+    xs <- many (noneOf "},([ \t")  <* spaces
     rest <- ((lookAhead (oneOf ",}") >> return ""))
             <|> (betweenStuff '(' ')' )
             <|> (betweenStuff '[' ']' )
