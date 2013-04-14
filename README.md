@@ -8,7 +8,7 @@ This program converts [HAML](http://haml.info/) templates to [ERB](http://www.st
 
 HAML syntax may look more compact, but on a mnemonic level, HAML is
 not very [compact](http://www.faqs.org/docs/artu/ch04s02.html). You will often require 
-the syntax reference on hand to write or decipher it.
+the syntax reference documentation on hand to write or decipher it.
 
 ERB is simpler, easier to remember the rules for, and more accessible to anyone
 familiar with HTML.  ERB templates are easier to teach to beginners and easier
