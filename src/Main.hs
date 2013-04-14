@@ -293,7 +293,7 @@ rubyEnd (x@(Tree (RubyMidBlock _) _):y@(Tree (RubyMidBlock _) _):xs) =
 rubyEnd (x@(Tree (RubyStartBlock _ _) _):xs) = x:endTagTree:(rubyEnd xs)
 rubyEnd (x@(Tree (RubyMidBlock _) _):xs) = x:endTagTree:(rubyEnd xs)
 
--- RubyExp with children with probably a form_for or the like; convert to a RubyStartBlock
+-- RubyExp with children is probably a form_for or the like; convert to a RubyStartBlock
 rubyEnd (x@(Tree (RubyExp s) children@(c:cs)):xs) = rubyEnd $ (Tree (RubyStartBlock s True) children):xs
 
 -- Move inline Ruby expressions to child tree
