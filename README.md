@@ -56,7 +56,7 @@ translate HAML templates to ERB. YMMV.
 constructs](http://haml.info/docs/yardoc/file.REFERENCE.html) such
 as 
 
-1. HTML-style () attributes e.g. `%a(title=@title href=href)`
+1. HTML-style () attributes e.g. `%a(title=@title href=ahref)`
 1. :class and :id attributes specified as a Ruby array
 1. Filters besides `:javascript` and `:erb`; these are just rendered inside pseudo-tags named after the filter
 1. Whitespace removal sytnax
