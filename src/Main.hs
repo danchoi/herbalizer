@@ -39,6 +39,7 @@ data Expression =
     | PlainText String
     | RubyStartBlock String IsFormTag
     | RubyMidBlock String
+    | RubySideEffect String
     | RubyExp String
     | Tag String Attrs InlineContent
     | GenericExpression String 
@@ -258,6 +259,8 @@ erb n tree@(Tree (RubyMidBlock s) xs) =
 
 erb n tree@(Tree (RubyExp s) _) = [pad n ++ "<%= " ++ s ++ " %>"] 
 
+erb n tree@(Tree (RubySideEffect s) []) = [pad n ++ "<% " ++ s ++ " %>"] 
+
 erb n tree@(Tree (PlainText s) _) = [pad n ++ s] 
 erb n tree@(Tree (Comment s) xs) = (pad n ++ "<!--" ++ s) : ((processChildren (n + 1) xs) ++ [pad n  ++ "-->"])
 
@@ -279,7 +282,8 @@ erb n tree@(Tree (DocType s) _) = [d s]
 erb n x@_ = [pad n ++ show x]
 
 
-endTagTree = Tree (PlainText "<% end %>") []
+-- Ruby expressions with no output and no children; convert to RubySideEffect type
+rubyEnd ((Tree (RubyStartBlock s False) []):xs) = rubyEnd $ (Tree (RubySideEffect s) []):xs 
 
 -- Try to insert "<% end %>" tags correctly
 rubyEnd (x@(Tree (RubyStartBlock _ _) _):y@(Tree (RubyMidBlock _) _):xs) = 
@@ -296,21 +300,17 @@ rubyEnd (x@(Tree (RubyExp s) children@(c:cs)):xs) = rubyEnd $ (Tree (RubyStartBl
 rubyEnd (x@(Tree (Tag t a (RubyInlineContent s)) ts):xs) = 
   (Tree (Tag t a NullInlineContent) ((Tree (RubyExp s) []):ts)):(rubyEnd xs)
 
-
-
 -- erb content should pass through
 rubyEnd (x@(Tree (Tag "erb" a (HamlFilterContent s)) ts):xs) = (Tree (PlainText s) []):(rubyEnd xs)
 
 -- Move HamlFilterContent to child tree
 rubyEnd (x@(Tree (Tag t a (HamlFilterContent s)) ts):xs) = (Tree (Tag t a NullInlineContent) ((Tree (PlainText ('\n':s)) []):ts)):(rubyEnd xs)
 
-
-
-
-
 rubyEnd (x:xs) = x : (rubyEnd xs)
 rubyEnd [] = []
 
+
+endTagTree = Tree (PlainText "<% end %>") []
 
 
 startTag :: Tree -> String

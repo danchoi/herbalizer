@@ -68,7 +68,6 @@ as
 1. Conditional /[] comments; passed through; normal / comments OK
 1. HAML Comments (#-) not processed
 1. XML Doctype (!!! XML) declarations; HTML Doctype declarations are supported
-1. Single-line Ruby expressions that are purely for side effect and not for output; an extra <% end %> will be created. (This is bad practice anyway)
 
 Eventually I hope to cover more of these edge cases. 
 
