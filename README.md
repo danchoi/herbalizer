@@ -73,3 +73,10 @@ as
 Eventually I hope to cover more of these edge cases. 
 
 
+### Related reading
+
+* [Fashion Runway: ERb vs. Haml](http://robots.thoughtbot.com/post/159805300/fashion-runway-erb-vs-haml)
+* [HAML: the unforgivable sin](http://opensoul.org/blog/archives/2011/11/30/haml-the-unforgivable-sin/)
+* [Why I don't like HAML](http://blog.getify.com/why-i-dont-like-haml/)
+
+
