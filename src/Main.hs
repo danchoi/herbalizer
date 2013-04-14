@@ -67,10 +67,7 @@ rubyBlock = do
 
 rubyExp = do
   line <- ((:) <$> char '=' >> spaces >> manyTill anyChar newline <* spaces)
-  -- slightly hackish attempt to deal with simple_for_form (damn you plataformatec!)
-  if (line =~ "form_for" || line =~ "form_tag" || line =~ "fields_for" || (line =~ "\\.association " && line =~ " do") || (line =~ "\\.input" && line =~ " do"))
-  then return (RubyStartBlock line True)
-  else return (RubyExp  line)
+  return (RubyExp line)
 
 tag :: IParser Expression
 tag = do
@@ -254,10 +251,13 @@ erb n tree@(Tree (RubyStartBlock s isform) xs) =
   where 
     starttag True = "<%= "
     starttag False = "<% "
+
+
 erb n tree@(Tree (RubyMidBlock s) xs) = 
     (pad n ++ "<% " ++ s ++ " %>") : (processChildren (n + 1) xs)
 
 erb n tree@(Tree (RubyExp s) _) = [pad n ++ "<%= " ++ s ++ " %>"] 
+
 erb n tree@(Tree (PlainText s) _) = [pad n ++ s] 
 erb n tree@(Tree (Comment s) xs) = (pad n ++ "<!--" ++ s) : ((processChildren (n + 1) xs) ++ [pad n  ++ "-->"])
 
@@ -279,17 +279,23 @@ erb n tree@(Tree (DocType s) _) = [d s]
 erb n x@_ = [pad n ++ show x]
 
 
+endTagTree = Tree (PlainText "<% end %>") []
+
 -- Try to insert "<% end %>" tags correctly
 rubyEnd (x@(Tree (RubyStartBlock _ _) _):y@(Tree (RubyMidBlock _) _):xs) = 
     x:(rubyEnd (y:xs))  -- just shift the cursor to the right
 rubyEnd (x@(Tree (RubyMidBlock _) _):y@(Tree (RubyMidBlock _) _):xs) = 
     x:(rubyEnd (y:xs))
-rubyEnd (x@(Tree (RubyStartBlock _ _) _):xs) = x:(Tree (PlainText "<% end %>") []):(rubyEnd xs)
-rubyEnd (x@(Tree (RubyMidBlock _) _):xs) = x:(Tree (PlainText "<% end %>") []):(rubyEnd xs)
+rubyEnd (x@(Tree (RubyStartBlock _ _) _):xs) = x:endTagTree:(rubyEnd xs)
+rubyEnd (x@(Tree (RubyMidBlock _) _):xs) = x:endTagTree:(rubyEnd xs)
+
+-- RubyExp with children with probably a form_for or the like; convert to a RubyStartBlock
+rubyEnd (x@(Tree (RubyExp s) children@(c:cs)):xs) = rubyEnd $ (Tree (RubyStartBlock s True) children):xs
 
 -- Move inline Ruby expressions to child tree
 rubyEnd (x@(Tree (Tag t a (RubyInlineContent s)) ts):xs) = 
   (Tree (Tag t a NullInlineContent) ((Tree (RubyExp s) []):ts)):(rubyEnd xs)
+
 
 
 -- erb content should pass through
