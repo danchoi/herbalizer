@@ -17,12 +17,12 @@ As far as I know, there is no other reliable and robust tool
 to convert HAML to ERB. To [quote](https://groups.google.com/d/msg/haml/rx6T5eLnPN0/Dr7ckyoLK5gJ)  
 HAML maintainer Nathan Weizenbaum:
 
-    No, no such tool exists. In fact, it's not possible to make without
-    parsing Ruby code - Haml supports several constructs, such as = with a
-    block and comments within Ruby code, that ERB doesn't. It might be
-    possible to modify the Haml engine to convert a fairly large subset of
-    Haml to ERB, but it would take considerable work to even get to an
-    imperfect implementation.
+>   No, no such tool exists. In fact, it's not possible to make without
+>   parsing Ruby code - Haml supports several constructs, such as = with a
+>   block and comments within Ruby code, that ERB doesn't. It might be
+>   possible to modify the Haml engine to convert a fairly large subset of
+>   Haml to ERB, but it would take considerable work to even get to an
+>   imperfect implementation.
 
 However, with Haskell, it is possible to write a pretty good parser-translator
 for HAML markup without incorporating a full-blown Ruby parser, and do it in
