@@ -13,7 +13,7 @@ beginners and easier to collaborate on with a wider range of people, like
 designers. And for some people ERB is easier on the eyes, with its undulating
 nestings.
 
-As far as I know, Prior to *herbalizer*, there was no reliable and robust tool
+As far as I know, there is no other reliable and robust tool
 to convert HAML to ERB. To [quote](https://groups.google.com/d/msg/haml/rx6T5eLnPN0/Dr7ckyoLK5gJ)  
 HAML maintainer Nathan Weizenbaum:
 
