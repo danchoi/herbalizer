@@ -80,6 +80,7 @@ as
 1. Conditional /[] comments; passed through; normal / comments OK
 1. HAML Comments (#-) not processed
 1. XML Doctype (!!! XML) declarations; HTML Doctype declarations are supported
+1. Ternary Ruby expressions in attribute values are not handled well
 
 Maybe **herbalizer** will cover more of these edge cases over time.  Let me
 know in a GitHub issue if you have a particular need. I'll try to write a
