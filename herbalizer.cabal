@@ -9,6 +9,7 @@ Maintainer: dhchoi@gmail.com
 Build-Type: Simple
 Category: Utility
 License:             MIT
+License-file:        LICENSE
 Cabal-Version: >= 1.4
 Executable herbalizer
   Hs-Source-Dirs: src
@@ -23,6 +24,5 @@ Executable herbalizer
     containers,
     regex-posix,
     mtl
-  ghc-options: -threaded -Wall -fwarn-tabs -funbox-strict-fields -O2 -fno-warn-orphans -fno-warn-unused-do-bind
 
   
