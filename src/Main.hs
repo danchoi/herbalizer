@@ -8,10 +8,10 @@ import Data.List (intercalate)
 import Text.Parsec hiding (State)
 import Text.Parsec.Indent
 import Text.Parsec.Pos
-import Data.List (isPrefixOf)
+import Data.List (isPrefixOf, isInfixOf)
 import qualified Data.Map as M
-import Data.List.Utils
-import Data.List (isInfixOf)
+-- import Data.List.Utils
+import Utils
 import Text.Regex.Posix
 import System.Environment
 

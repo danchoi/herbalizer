@@ -20,7 +20,6 @@ Executable herbalizer
     ghc-prim,
     parsec,
     indents,
-    MissingH,
     containers,
     regex-posix,
     mtl
