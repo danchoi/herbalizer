@@ -2,16 +2,13 @@
 module Main where
 import Control.Applicative ((<$>), (<*>), (<*), (<$))
 import Control.Monad (liftM)
-import Control.Monad.State 
+import Control.Monad.State (State, runState)
 import Control.Applicative ((<*))
-import Data.List (intercalate)
 import Text.Parsec hiding (State)
 import Text.Parsec.Indent
 import Text.Parsec.Pos
-import Data.List (isPrefixOf, isInfixOf)
+import Data.List (isPrefixOf, isInfixOf, intercalate, intersperse)
 import qualified Data.Map as M
--- import Data.List.Utils
-import Utils
 import Text.Regex.Posix
 import System.Environment
 
@@ -347,6 +344,45 @@ mapEithers f (x:xs) = case mapEithers f xs of
                   Left err -> Left err
                   Right y -> Right (y:ys)
 mapEithers _ _ = Right []
+
+
+-- the following functions are extracted from MissingH Data.List.Utils 
+-- by John Goerzen <jgoerzen@complete.org>
+
+replace :: Eq a => [a] -> [a] -> [a] -> [a]
+replace old new l = join new . split old $ l
+
+join :: [a] -> [[a]] -> [a]
+join delim l = concat (intersperse delim l)
+
+breakList :: ([a] -> Bool) -> [a] -> ([a], [a])
+breakList func = spanList (not . func)
+
+spanList :: ([a] -> Bool) -> [a] -> ([a], [a])
+
+spanList _ [] = ([],[])
+spanList func list@(x:xs) =
+    if func list
+       then (x:ys,zs)
+       else ([],list)
+    where (ys,zs) = spanList func xs
+
+split :: Eq a => [a] -> [a] -> [[a]]
+split _ [] = []
+split delim str =
+    let (firstline, remainder) = breakList (startswith delim) str
+        in
+        firstline : case remainder of
+                                   [] -> []
+                                   x -> if x == delim
+                                        then [] : []
+                                        else split delim
+                                                 (drop (length delim) x)
+
+
+startswith :: Eq a => [a] -> [a] -> Bool
+startswith = isPrefixOf
+
 
 ------------------------------------------------------------------------
 

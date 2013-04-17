@@ -33,8 +33,7 @@ The GHC Platform, unless you're using a precompiled binary.
 
 ## Install
 
-From the git project directory,
-
+    cabal update
     cabal install 
 
 ## Quick setup for Mac OS X Users
