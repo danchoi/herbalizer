@@ -92,6 +92,6 @@ patch.
 * [Fashion Runway: ERb vs. Haml](http://robots.thoughtbot.com/post/159805300/fashion-runway-erb-vs-haml)
 * [HAML: the unforgivable sin](http://opensoul.org/blog/archives/2011/11/30/haml-the-unforgivable-sin/)
 * [Why I don't like HAML](http://blog.getify.com/why-i-dont-like-haml/)
-* [My thoughts on HamL and ERB](https://speakerdeck.com/klaustopher/erb)
+* [My thoughts on Haml and ERB](https://speakerdeck.com/klaustopher/erb)
 
 
