@@ -1,11 +1,13 @@
 Name: herbalizer
-Version: 0.4.6
+Version: 0.4.7
 
 Synopsis: HAML to ERB translator
 Description:
   HAML to ERB translator
 Author: Daniel Choi
 Maintainer: dhchoi@gmail.com
+Homepage: https://github.com/danchoi/herbalizer
+Bug-reports: https://github.com/danchoi/herbalizer/issues
 Build-Type: Simple
 Category: Utility
 License:             MIT
