@@ -24,8 +24,7 @@ quote HAML maintainer Nathan Weizenbaum:
 >  [source](https://groups.google.com/d/msg/haml/rx6T5eLnPN0/Dr7ckyoLK5gJ)  
 
 However, with Haskell, it is possible to write a pretty good parser-translator
-for HAML markup without incorporating a full-blown Ruby parser, and do it in
-only 300 lines of code.
+for HAML markup without incorporating a full-blown Ruby parser.
 
 ## Requirements
 
