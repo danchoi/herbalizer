@@ -35,7 +35,7 @@ The GHC Platform, unless you're using a precompiled binary.
 ## Install
 
     cabal update
-    cabal install 
+    cabal install herbalizer
 
 ## Quick setup for Mac OS X Users
 
