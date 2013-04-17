@@ -127,7 +127,13 @@ rubyString = do
     stringChar = ('"' <$ string "\\\"") <|> (noneOf "\"") 
     replaceInterpolationDelim = (replace "#{" "<%= ") . (replace "}" " %>")
 
-rubySymbol =  char ':' >> rubyIdentifier
+rubySymbol =  do
+      char ':' 
+      xs <- (char '"' >> many stringChar2 <* char '"') <|> (char '\'' >> many stringChar1 <* char '\'') <|> rubyIdentifier 
+      return xs
+  where stringChar1 = ('\'' <$ string "\\'") <|> (noneOf "'")
+        stringChar2 = ('"' <$ string "\\\"") <|> (noneOf "\"")
+
 rubySymbolKey = rubyIdentifier <* char ':'
 
 -- really, we need to parse full-blown Ruby expressions
