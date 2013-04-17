@@ -12,8 +12,8 @@ accessible to anyone familiar with HTML.  ERB templates are easier to teach to
 beginners and easier to collaborate on with a wider range of people, like
 designers. And for some people ERB is easier on the eyes.
 
-As far as I know, there is no other reliable and robust tool
-to convert HAML to ERB. To quote HAML maintainer Nathan Weizenbaum:
+As far as I know, there is no other good tool to convert HAML to ERB. To
+quote HAML maintainer Nathan Weizenbaum:
 
 >  No, no such tool exists. In fact, it's not possible to make without
 >  parsing Ruby code - Haml supports several constructs, such as = with a
