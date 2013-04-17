@@ -1,6 +1,7 @@
 {- arch-tag: List utilities main file
 
-Dan Choi: This is extracted from MissingH because the library as a whole has compile problems on OS X
+Dan Choi: This is extracted from MissingH because the library as a whole has
+compile problems on Ubuntu
 
 Copyright (c) 2004-2011 John Goerzen <jgoerzen@complete.org>
 
