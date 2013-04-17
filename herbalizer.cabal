@@ -10,7 +10,10 @@ Build-Type: Simple
 Category: Utility
 License:             MIT
 License-file:        LICENSE
-Cabal-Version: >= 1.4
+Cabal-Version: >= 1.6
+Source-repository head
+  type:     git
+  location: git@github.com:danchoi/herbalizer.git
 Executable herbalizer
   Hs-Source-Dirs: src
   main-is: Main.hs
