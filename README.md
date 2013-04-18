@@ -74,7 +74,6 @@ as
 1. Whitespace removal sytnax
 1. Object reference syntax
 1. Escaping HTML &= syntax
-1. Unescaping HTML != syntax
 1. Multiline | syntax
 1. Ruby Interpolation #{} within plain body text; passed through
 1. Conditional /[] comments; passed through; normal / comments OK

@@ -49,7 +49,7 @@ container = do
   return b
 
 expression :: IParser Expression
-expression = docType <|> comment <|> hamlFilter <|> startPlainText <|> rubyBlock <|> rubyExp <|> tag <|>  genericExpression
+expression = (try escapeHtmlExpr <|> docType) <|> comment <|> hamlFilter <|> startPlainText <|> rubyBlock <|> rubyExp <|> tag <|>  genericExpression
   
 rubyBlock = do
     char '-'
@@ -62,6 +62,11 @@ rubyBlock = do
     -- e.g. "- localvar = Time.now"
     else return (RubyStartBlock (k ++ rest) False)
   where midBlockKeywords = ["else", "elsif", "rescue", "ensure", "when", "end"]
+
+escapeHtmlExpr = do
+  char '!'
+  line <- ((:) <$> char '=' >> spaces >> manyTill anyChar newline <* spaces)
+  return $ RubyExp $ "raw(" ++ line ++ ")"
 
 rubyExp = do
   line <- ((:) <$> char '=' >> spaces >> manyTill anyChar newline <* spaces)
