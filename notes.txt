@@ -18,4 +18,10 @@ with nested content. I can cover all cases by checking whether tree has children
 
 
 
+------------------------------------------------------------------------
 
+
+GOING FORWARD
+
+We should parse into an abstract syntax tree first, then do a reduction
+(normalization), and then do the transformation
