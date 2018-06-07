@@ -54,6 +54,14 @@ You will need to reload your terminal for path to update. Verify the new path wi
 
 ```echo $PATH```
 
+You can also compile programs using cabal. If you are programming in Haskell with your development system setup with cabal....
+
+Add this to your ~/.bash_profile
+
+export PATH="$HOME/Library/Haskell/bin:$PATH"
+
+```source ~/.bash_profile```
+
 ## Usage
 
     herbalizer < test.haml 
