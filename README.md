@@ -52,7 +52,7 @@ And then put it on your PATH.
 
 You will need to reload your terminal for path to update. Verify the new path with...
 
-```echo $PATH```
+```echo $PATH | grep Haskell```
 
 You can also compile programs using cabal. If you are programming in Haskell with your development system setup with cabal....
 
