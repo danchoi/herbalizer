@@ -66,6 +66,10 @@ export PATH="$HOME/Library/Haskell/bin:$PATH"
 
     herbalizer < test.haml 
 
+## Simple way to save file
+
+    herbalizer < test.haml > outputfile.html.erb
+
 You can also pass filenames as arguments:
 
     herbalizer test.haml
