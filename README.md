@@ -46,6 +46,14 @@ I've precompiled the executable for OS X (10.8). You can download it and `chmod 
 
 And then put it on your PATH.
 
+## OSX - Add to Path
+
+```sudo /etc/paths```
+
+You will need to reload your terminal for path to update. Verify the new path with...
+
+```echo $PATH```
+
 ## Usage
 
     herbalizer < test.haml 
