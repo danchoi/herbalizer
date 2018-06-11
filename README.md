@@ -46,9 +46,29 @@ I've precompiled the executable for OS X (10.8). You can download it and `chmod 
 
 And then put it on your PATH.
 
+## OSX - Add to Path
+
+```sudo /etc/paths```
+
+You will need to reload your terminal for path to update. Verify the new path with...
+
+```echo $PATH | grep Haskell```
+
+You can also compile programs using cabal. If you are programming in Haskell with your development system setup with cabal....
+
+Add this to your ~/.bash_profile
+
+export PATH="$HOME/Library/Haskell/bin:$PATH"
+
+```source ~/.bash_profile```
+
 ## Usage
 
     herbalizer < test.haml 
+
+## Simple way to save file
+
+    herbalizer < test.haml > outputfile.html.erb
 
 You can also pass filenames as arguments:
 
